@@ -91,7 +91,7 @@ for (const arq of paginas) {
   if (/http-equiv=["']?refresh/i.test(html) && html.length < 1500) continue;
 
   textoDoSiteNovo += ' ' + textoVisivel(html);
-  const e404 = rota === '/404';
+  const e404 = rota === '/404' || rota.startsWith('/_not-found');
 
   const titulo = (html.match(/<title>([\s\S]*?)<\/title>/i) || [])[1]?.trim();
   if (!titulo) erro(`${rota}: sem <title>`);
