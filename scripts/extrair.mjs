@@ -50,6 +50,12 @@ const base = new URL(urlInicial);
 const hostBase = base.hostname.replace(/^www\./, '');
 const EXT_DOCUMENTO = /\.(pdf|docx?|xlsx?|pptx?|zip|rar)$/i;
 const EXT_IGNORAR = /\.(jpe?g|png|gif|webp|svg|ico|css|js|xml|txt|mp4|mp3|woff2?|ttf)$/i;
+// Endereços que não são páginas de conteúdo (compartilhar, login, feeds, busca...)
+function naoEPagina(u) {
+  const url = new URL(u);
+  if ([...url.searchParams.keys()].some((k) => /^(share|s|p|preview|print|action|redirect_to|attachment_id|lang)$/i.test(k))) return true;
+  return /\/(wp-login\.php|wp-admin|wp-json|xmlrpc\.php|feed|comments\/feed|trackback|cdn-cgi)(\/|$)/i.test(url.pathname);
+}
 
 // ---------- utilidades ----------
 const dormir = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -63,7 +69,7 @@ function normalizar(u) {
     const url = new URL(u, base);
     url.hash = '';
     for (const p of [...url.searchParams.keys()]) {
-      if (/^(utm_|fbclid|gclid|ref$)/i.test(p)) url.searchParams.delete(p);
+      if (/^(utm_|fbclid|gclid|ref$|replytocom$|like_comment$|_wpnonce$|amp$|nb$)/i.test(p)) url.searchParams.delete(p);
     }
     return url.href;
   } catch { return null; }
@@ -133,6 +139,9 @@ function coletarNaPagina() {
 
   // HTML -> Markdown simples
   const PULAR = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'SVG', 'IFRAME', 'FORM', 'BUTTON', 'SELECT', 'TEMPLATE']);
+  // Blocos que não são conteúdo: botões de compartilhar, curtidas, comentários,
+  // posts relacionados, avisos de cookies, barras de plataforma (WordPress, Wix...)
+  const RUIDO = /(sharedaddy|sd-sharing|share-?buttons|social-share|jp-relatedposts|wpl-likebox|sd-like|post-likes|comments-area|comment-respond|commentlist|(^|\s)comments(\s|$)|(^|\s)respond(\s|$)|wpcnt|cookie|lgpd|gdpr|wpadminbar|actionbar|marketing-bar|skip-link)/i;
   // Sites antigos montavam o LAYOUT com <table>. Só tratamos como tabela de dados
   // se não houver blocos (parágrafos, títulos, imagens...) dentro dela.
   const cacheLayout = new Map();
@@ -145,6 +154,7 @@ function coletarNaPagina() {
     if (no.nodeType === Node.TEXT_NODE) return no.textContent.replace(/\s+/g, ' ');
     if (no.nodeType !== Node.ELEMENT_NODE) return '';
     if (PULAR.has(no.tagName) || !visivel(no)) return '';
+    if (RUIDO.test(`${no.id || ''} ${typeof no.className === 'string' ? no.className : ''}`)) return '';
     const filhos = () => [...no.childNodes].map(md).join('');
     const tag = no.tagName;
     if (/^H[1-6]$/.test(tag)) return `\n\n${'#'.repeat(+tag[1])} ${limpar(filhos())}\n\n`;
@@ -200,8 +210,10 @@ function coletarNaPagina() {
   }
 
   // Logo provável
-  const logoEl = [...document.querySelectorAll('header img, img')].find((i) =>
-    /logo|marca|brand/i.test(`${i.src} ${i.alt} ${i.className} ${i.id} ${i.parentElement?.className}`));
+  const logoEl =
+    document.querySelector('.custom-logo, .site-logo img, #logo img, .logo img, .site-branding img, img[class*="logo" i], img[id*="logo" i]') ||
+    [...document.querySelectorAll('img')].find((i) => /logo|logomarca/i.test(`${i.src} ${i.alt}`)) ||
+    [...document.querySelectorAll('header img, #header img, #masthead img, #branding img')].find((i) => (i.naturalWidth || 0) < 700);
 
   // Links (para continuar navegando)
   const links = [...document.querySelectorAll('a[href]')].map((a) => a.href);
@@ -226,8 +238,15 @@ function coletarNaPagina() {
   };
 
   // Menu (do cabeçalho/nav)
-  const nav = document.querySelector('header nav, nav, header');
-  const menu = nav ? [...nav.querySelectorAll('a[href]')].map((a) => ({ texto: limpar(a.innerText), link: a.href })).filter((m) => m.texto) : [];
+  const candidatosMenu = [...document.querySelectorAll('nav, [role=navigation], #access, #nav, #menu, .menu, .main-navigation, .navbar, #navigation, .navigation, header')]
+    .filter((el) => !el.closest('footer') && visivel(el));
+  const linksInternos = (el) => [...el.querySelectorAll('a[href]')]
+    .filter((a) => a.hostname.replace(/^www\./, '') === location.hostname.replace(/^www\./, '') && limpar(a.innerText));
+  const nav = candidatosMenu
+    .map((el) => ({ el, n: linksInternos(el).length }))
+    .filter((c) => c.n >= 2 && c.n <= 40)
+    .sort((a, b) => b.n - a.n)[0]?.el;
+  const menu = nav ? [...new Map(linksInternos(nav).map((a) => [a.href, { texto: limpar(a.innerText), link: a.href }])).values()] : [];
 
   // Cores e fontes em uso
   const cores = {};
@@ -379,6 +398,15 @@ async function main() {
       while (slugsUsados.has(slug)) slug += '-2';
       slugsUsados.add(slug);
 
+      // tira do print as barras e avisos flutuantes (cookies, barra do WordPress...)
+      await pagina.evaluate(() => {
+        for (const el of document.querySelectorAll('body *')) {
+          const s = getComputedStyle(el);
+          if (s.position !== 'fixed' && s.position !== 'sticky') continue;
+          const id = `${el.id} ${typeof el.className === 'string' ? el.className : ''} ${el.innerText?.slice(0, 200) || ''}`;
+          if (/cookie|privacidade|privacy|lgpd|gdpr|wpcom|wordpress\.com|actionbar|marketing|consent|aceit/i.test(id)) el.style.display = 'none';
+        }
+      }).catch(() => {});
       await pagina.screenshot({ path: path.join(DIR.shots, `${slug}.jpg`), fullPage: true, type: 'jpeg', quality: 60 }).catch(() => {});
       if (slug === 'home') {
         await pagina.setViewportSize({ width: 390, height: 844 });
@@ -422,7 +450,7 @@ async function main() {
         const n = normalizar(l);
         if (!n || !mesmoSite(n)) continue;
         if (EXT_DOCUMENTO.test(new URL(n).pathname)) { documentos.add(n); continue; }
-        if (EXT_IGNORAR.test(new URL(n).pathname)) continue;
+        if (EXT_IGNORAR.test(new URL(n).pathname) || naoEPagina(n)) continue;
         if (!vistasExatas.has(n)) fila.push(n);
       }
     } catch (erro) {
