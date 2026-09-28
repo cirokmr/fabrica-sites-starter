@@ -35,7 +35,7 @@ function maisRecente(alvo) {
   for (const nome of fs.readdirSync(alvo)) max = Math.max(max, maisRecente(path.join(alvo, nome)));
   return max;
 }
-const alvos = ['src', 'public', 'redirects.json', 'astro.config.mjs'];
+const alvos = ['src', 'conteudo', 'public', 'redirects.json', 'next.config.ts'];
 const mudou = Math.max(...alvos.map(maisRecente)) > ultimo;
 if (!mudou) process.exit(0);
 

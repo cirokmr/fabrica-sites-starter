@@ -39,11 +39,11 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .node-version
 
-      - name: Instalar dependências e navegador
+      - name: Instalar extrator (Playwright + sharp) e navegador
         run: |
-          npm install --no-audit --no-fund
+          npm install --no-save --no-audit --no-fund --no-package-lock playwright sharp
           npx playwright install --with-deps chromium
 
       - name: Extrair o site antigo

@@ -1,0 +1,16 @@
+# Cabeçalhos HTTP para a Cloudflare Pages (o Netlify também lê este arquivo).
+
+# Arquivos do Next com hash no nome nunca mudam: cache longo.
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Fotos e vídeos: o navegador confere a versão (ETag) e só baixa se mudou,
+# assim uma foto trocada com o mesmo nome aparece na hora.
+/wp/*
+  Cache-Control: public, max-age=0, must-revalidate
+/video/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

@@ -2,6 +2,8 @@
 # A cada envio (push) ou pull request, o GitHub instala tudo, compila o site
 # e roda "npm run checar". Resultado: aba "Actions" do repositório
 # (✅ verde = passou, ❌ vermelho = abra para ver o relatório).
+# Se o build quebrar, o final do log vira uma ANOTAÇÃO da execução — o Claude
+# consegue ler pela API do GitHub e corrigir sozinho.
 name: Qualidade
 
 on:
@@ -12,19 +14,36 @@ on:
 jobs:
   build-e-checagem:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .node-version
+          cache: npm
 
       - name: Instalar dependências
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund || npm install --no-audit --no-fund
 
       - name: Compilar o site
-        run: npm run build
+        run: |
+          set -o pipefail
+          npm run build 2>&1 | tee build.log
+
+      - name: Erro de build (resumo legível pela API)
+        if: failure()
+        run: |
+          if [ -f build.log ]; then
+            node -e '
+              const fs = require("fs");
+              const log = fs.readFileSync("build.log", "utf8").split("\n");
+              const i = log.findIndex((l) => /error|Error|erro|Type error|Failed/.test(l));
+              const trecho = (i >= 0 ? log.slice(Math.max(0, i - 5), i + 40) : log.slice(-45)).join("\n").slice(0, 3800);
+              const esc = trecho.replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A");
+              console.log("::error title=Build falhou::" + esc);
+            '
+          fi
 
       - name: Controle de qualidade
         run: npm run checar
@@ -33,6 +52,12 @@ jobs:
         if: always()
         run: |
           if [ -f relatorio-qa.md ]; then cat relatorio-qa.md >> "$GITHUB_STEP_SUMMARY"; fi
+          if [ -f relatorio-qa.md ]; then
+            node -e '
+              const r = require("fs").readFileSync("relatorio-qa.md", "utf8").slice(0, 3800);
+              console.log("::notice title=Relatório de qualidade::" + r.replace(/%/g, "%25").replace(/\n/g, "%0A"));
+            '
+          fi
 
       - name: Guardar relatório e site compilado
         if: always()
@@ -41,5 +66,7 @@ jobs:
           name: relatorio-e-site
           path: |
             relatorio-qa.md
-            dist/
+            build.log
+            out/
           if-no-files-found: ignore
+          retention-days: 7

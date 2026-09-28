@@ -2,12 +2,12 @@
   "redirects": [
     {
       "source": "/quem-somos.html",
-      "destination": "/sobre",
+      "destination": "/sobre/",
       "permanent": true
     },
     {
       "source": "/fale-conosco.php",
-      "destination": "/contato",
+      "destination": "/contato/",
       "permanent": true
     }
   ]

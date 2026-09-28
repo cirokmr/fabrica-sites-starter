@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * CONTROLE DE QUALIDADE (roda sobre o site já compilado em dist/)
+ * CONTROLE DE QUALIDADE (roda sobre o site já compilado em out/)
  * ---------------------------------------------------------------
  *   npm run build && npm run checar
  *
@@ -17,7 +17,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const DIST = path.resolve('dist');
+const DIST = path.resolve('out'); // saída do next build (export estático)
 const EXTRAIDO = path.resolve('extraido');
 const LIMITE_IMAGEM_KB = 300;
 const COBERTURA_MINIMA = 0.7;
@@ -30,7 +30,7 @@ const ehCliente = fs.existsSync('cliente.json');
 const aviso = (m) => avisos.push(m);
 
 if (!fs.existsSync(DIST)) {
-  console.error('❌ Pasta dist/ não existe. Rode "npm run build" antes de "npm run checar".');
+  console.error('❌ Pasta out/ não existe. Rode "npm run build" antes de "npm run checar".');
   process.exit(1);
 }
 
@@ -80,7 +80,7 @@ const normalizar = (s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '
   .replace(/[^a-z0-9]+/g, ' ').trim();
 
 // ---------- 1-3: páginas ----------
-const paginas = listar(DIST, (p) => p.endsWith('.html'));
+const paginas = listar(DIST, (p) => p.endsWith('.html') && !p.includes(`${path.sep}_next${path.sep}`) && !p.includes('_vazio'));
 const titulos = new Map();
 let textoDoSiteNovo = '';
 
@@ -146,7 +146,7 @@ for (const arq of paginas) {
   }
 
   // No próprio molde (sem cliente.json) o texto de exemplo é esperado.
-  if (ehCliente) for (const sobra of ['Empresa Exemplo', 'exemplo.com.br', 'Lorem ipsum', 'tirada do site antigo', 'vindo do site antigo']) {
+  if (ehCliente) for (const sobra of ['Estúdio Exemplo', 'exemplo.com.br', 'Imagem de exemplo', 'IMAGEM DE EXEMPLO', '/img/exemplo/', 'Cidade Exemplo', 'Lorem ipsum']) {
     if (html.includes(sobra)) { erro(`${rota}: ainda tem texto do molde ("${sobra}")`); break; }
   }
 }

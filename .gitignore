@@ -1,11 +1,15 @@
 node_modules/
-dist/
-.astro/
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
 .DS_Store
 .env
+.wrangler/
 # Do material extraído vai para o Git: textos, prints (JPG) e imagens otimizadas
 # (extraido/imagens-web). Só as imagens ORIGINAIS ficam de fora (pesadas).
 extraido/imagens/
 relatorio-qa.md
+build.log
 .claude/.ultimo-build
 .claude/settings.local.json

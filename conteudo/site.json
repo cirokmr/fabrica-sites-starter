@@ -1,0 +1,127 @@
+{
+  "_leia": "Identidade e textos do site. No molde, tudo aqui é EXEMPLO e precisa ser trocado na etapa /reconstruir. O checador acusa como erro qualquer 'Exemplo' que sobrar num repositório de cliente.",
+
+  "nome": "Exemplo",
+  "nomeCompleto": "Estúdio Exemplo",
+  "url": "https://www.exemplo.com.br",
+  "descricao": "Estúdio Exemplo: frase de uma linha que diz o que a organização faz, para quem e onde.",
+  "corTema": "#111214",
+
+  "logo": null,
+  "marca": null,
+  "local": { "cidade": "Cidade Exemplo", "fuso": "America/Sao_Paulo", "pais": "Brasil" },
+
+  "contato": {
+    "email": "contato@exemplo.com.br",
+    "telefone": "(00) 0000-0000",
+    "whatsapp": "",
+    "endereco": "Rua Exemplo, 000 — Cidade Exemplo",
+    "formEndpoint": "https://formsubmit.co/ajax/contato@exemplo.com.br",
+    "assunto": "Contato pelo site — Exemplo"
+  },
+  "redes": [{ "rotulo": "Instagram", "usuario": "@exemplo", "href": "https://instagram.com/exemplo" }],
+  "nav": [
+    { "rotulo": "Sobre", "href": "/sobre/" },
+    { "rotulo": "Projetos", "href": "/projetos/" },
+    { "rotulo": "Notícias", "href": "/noticias/" },
+    { "rotulo": "Contato", "href": "/contato/" }
+  ],
+
+  "seo": { "og": "/img/og.jpg", "ogAlt": "Estúdio Exemplo" },
+
+  "intro": { "ativa": true, "esquerda": "Estúdio Exemplo", "direita": "Desde 2000", "rotulo": "Abrindo" },
+
+  "home": {
+    "secoes": [
+      {
+        "tipo": "hero",
+        "palavra": "Exemplo",
+        "pergunta": "Uma pergunta ou frase-conceito em itálico?",
+        "legenda": { "display": "Frase principal", "serif": "que resume o propósito." },
+        "topo": ["Desde 2000", "Assinatura curta", "Role para abrir ↓"],
+        "base": "Área 1 · Área 2 · Área 3",
+        "imagens": [
+          { "src": "/img/exemplo/foto-01.webp", "alt": "" },
+          { "src": "/img/exemplo/foto-03.webp", "alt": "" },
+          { "src": "/img/exemplo/foto-05.webp", "alt": "" },
+          { "src": "/img/exemplo/foto-07.webp", "alt": "Imagem de exemplo que termina em tela cheia" }
+        ]
+      },
+      {
+        "tipo": "manifesto",
+        "rotulo": "(01) Manifesto",
+        "titulo": { "display": "Uma afirmação forte —", "serif": "e a sua virada." },
+        "texto": "Parágrafo de apresentação com o texto real do cliente. Ele acende palavra por palavra enquanto a pessoa rola a página, então funciona melhor com duas a quatro frases diretas, sem jargão, que digam quem é, o que faz e por que importa.",
+        "figura": { "src": "/img/exemplo/foto-02.webp", "alt": "Imagem de exemplo", "legenda": "Fig. 01 — Legenda da foto" }
+      },
+      { "tipo": "faixa", "palavras": ["Palavra-chave", "Outra palavra"] },
+      {
+        "tipo": "colecao",
+        "rotulo": "(02) Projetos",
+        "titulo": "Projetos",
+        "texto": "{n} projetos. Role para percorrer.",
+        "prefixoNumero": "Nº",
+        "fim": { "display": "Todos os", "serif": "projetos" }
+      },
+      {
+        "tipo": "colagem",
+        "rotulo": "Onde atuamos",
+        "titulo": { "display": "Uma frase sobre território,", "serif": "alcance ou público." },
+        "nota": "Complemento curto em uma linha.",
+        "imagens": [
+          { "src": "/img/exemplo/foto-04.webp", "alt": "Imagem de exemplo" },
+          { "src": "/img/exemplo/foto-01.webp", "alt": "Imagem de exemplo" },
+          { "src": "/img/exemplo/foto-06.webp", "alt": "Imagem de exemplo" },
+          { "src": "/img/exemplo/foto-03.webp", "alt": "Imagem de exemplo" },
+          { "src": "/img/exemplo/foto-08.webp", "alt": "Imagem de exemplo" }
+        ]
+      },
+      {
+        "tipo": "destaques",
+        "rotulo": "(03) Notícias",
+        "titulo": { "display": "Últimas", "serif": "notícias" },
+        "quantidade": 3,
+        "link": "Todas as notícias"
+      }
+    ]
+  },
+
+  "projetos": {
+    "rotulo": "Projetos · {n} registros",
+    "titulo": "Projetos",
+    "lead": "Frase curta que apresenta a coleção de projetos.",
+    "descricao": "Projetos do Estúdio Exemplo.",
+    "voltar": "← Projetos",
+    "proximo": "Próximo projeto",
+    "prefixoNumero": "Nº",
+    "cursor": "Ver"
+  },
+  "noticias": {
+    "rotulo": "Notícias · {n} publicações",
+    "titulo": "Notícias",
+    "lead": "Novidades, eventos e bastidores, ano a ano.",
+    "descricao": "Notícias do Estúdio Exemplo.",
+    "voltar": "← Notícias",
+    "proximo": "Próxima notícia",
+    "cursor": "Ler"
+  },
+  "contatoPagina": {
+    "rotulo": "Contato",
+    "titulo": { "display": "Escreva", "serif": "pra gente." },
+    "texto": "Uma ou duas frases convidando a pessoa a entrar em contato.",
+    "descricao": "Fale com o Estúdio Exemplo: e-mail, telefone e formulário.",
+    "campoMensagem": "Conte o que você precisa"
+  },
+  "rodape": {
+    "rotulo": "Contato",
+    "titulo": { "display": "Vamos fazer", "serif": "algo juntos?" },
+    "texto": "Frase curta de chamada para contato.",
+    "botao": "Iniciar uma conversa",
+    "palavra": "Exemplo"
+  },
+  "naoEncontrada": {
+    "titulo": "Página não encontrada",
+    "texto": "Esta página não existe ou mudou de endereço.",
+    "botao": "Voltar ao início"
+  }
+}

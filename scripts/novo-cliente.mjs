@@ -25,7 +25,7 @@ if (fs.existsSync(DESTINO)) {
   process.exit(1);
 }
 
-const IGNORAR = new Set(['node_modules', 'dist', '.astro', 'extraido', '.git', 'relatorio-qa.md', 'clientes', '.ultimo-build', 'settings.local.json', 'lote.txt', 'lote-resultado.csv']);
+const IGNORAR = new Set(['node_modules', 'out', '.next', 'dist', 'extraido', '.git', 'relatorio-qa.md', 'clientes', '.ultimo-build', 'settings.local.json', 'lote.txt', 'lote-resultado.csv']);
 fs.cpSync(MOLDE, DESTINO, {
   recursive: true,
   filter: (origem) => !IGNORAR.has(path.basename(origem)),

@@ -1,0 +1,46 @@
+/* ==========================================================================
+   TEMA DO CLIENTE — o único arquivo de estilo que muda de um site para outro.
+   Definido na etapa /direcao-de-arte (ver DIRECAO.md do cliente).
+
+   --escuro   fundo das seções escuras (e cor do texto nas claras)
+   --claro    fundo das seções claras (e cor do texto nas escuras)
+   --destaque cor de ação: cursor, links, botões, lâminas da transição
+   --apoio    cor secundária (opcional)
+
+   Contraste mínimo: --claro sobre --escuro e --escuro sobre --destaque ≥ 4.5:1.
+   ========================================================================== */
+
+:root {
+  --escuro: #111214;
+  --escuro-2: #17191c;
+  --escuro-3: #202328;
+  --claro: #eeeae3;
+  --claro-2: #dfd9ce;
+  --destaque: #7c93ff;
+  --destaque-2: #a3b3ff;
+  --apoio: #1f2a44;
+
+  /* Fontes: display (títulos em caixa-alta), serif (acentos em itálico), mono (metadados).
+     Os pacotes @fontsource correspondentes são importados em src/app/layout.tsx. */
+  --font-sans: 'Archivo Variable', 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --font-serif: 'Instrument Serif', 'Times New Roman', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  /* Largura do display (eixo wdth). 125 = expandida; 100 = normal. */
+  --display-largura: 125%;
+  --display-peso: 860;
+
+  --gutter: clamp(16px, 3.2vw, 48px);
+  --max: 1680px;
+  --nav-h: 76px;
+
+  --fs-mega: clamp(4.4rem, 24.5vw, 30rem);
+  --fs-xxl: clamp(3rem, 10.5vw, 11rem);
+  --fs-xl: clamp(2.5rem, 6.6vw, 7rem);
+  --fs-l: clamp(1.9rem, 3.8vw, 3.8rem);
+  --fs-m: clamp(1.3rem, 2.1vw, 1.9rem);
+  --fs-body: clamp(1rem, 0.95rem + 0.25vw, 1.15rem);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-inout: cubic-bezier(0.76, 0, 0.24, 1);
+}
