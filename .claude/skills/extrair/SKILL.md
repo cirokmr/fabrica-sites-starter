@@ -18,7 +18,18 @@ URL recebida: $ARGUMENTS
      (Se faltar o navegador: `npx playwright install chromium`.)
      Se o relatório disser que ficaram URLs não visitadas, rode de novo com `--max 150`.
    - **Respondeu 000/erro (nuvem sem internet) → extração pelo GitHub Actions.**
-     Peça ao usuário, com estas palavras:
+     a) Garanta que o branch atual existe no GitHub (`git push -u origin HEAD`).
+     b) Tente disparar você mesmo (dono/repo vêm de `git remote get-url origin`):
+     ```bash
+     curl -sS -X POST -H "Accept: application/vnd.github+json" -H "Content-Type: application/json" \
+       https://api.github.com/repos/<dono>/<repo>/actions/workflows/extrair.yml/dispatches \
+       -d '{"ref":"<branch atual>","inputs":{"url":"<URL>","max_paginas":"60"}}' -w "%{http_code}"
+     ```
+     `204` = disparou. Acompanhe a cada 15 s em
+     `https://api.github.com/repos/<dono>/<repo>/actions/workflows/extrair.yml/runs?per_page=1`
+     até `"status": "completed"`. Se `"conclusion": "success"`, rode `git pull` e siga.
+     c) Se não conseguir disparar (qualquer código diferente de 204), peça ao usuário,
+     com estas palavras:
      > No GitHub, abra este repositório → aba **Actions** → **Extrair site antigo** →
      > **Run workflow** → cole `<URL>` → **Run workflow**. Leva de 2 a 5 minutos.
      > Quando aparecer o ✅ verde, me avise.
