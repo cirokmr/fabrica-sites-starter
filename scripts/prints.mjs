@@ -71,6 +71,12 @@ async function estatico(rota, largura, sufixo) {
   const ctx = await navegador.newContext({ viewport: { width: largura, height: 900 }, reducedMotion: 'reduce', deviceScaleFactor: 1 });
   const page = await ctx.newPage();
   await page.goto(BASE + rota, { waitUntil: 'networkidle' });
+  // rola até o fim para carregar as imagens "lazy" antes do print da página inteira
+  await page.evaluate(async () => {
+    for (let y = 0; y < document.body.scrollHeight; y += 600) { window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 60)); }
+    window.scrollTo(0, 0);
+  });
+  await page.waitForLoadState('networkidle').catch(() => {});
   await page.waitForTimeout(600);
   await page.screenshot({ path: path.join(DEST, `${nome(rota)}--${sufixo}.jpg`), fullPage: true, type: 'jpeg', quality: 62 });
   await ctx.close();
