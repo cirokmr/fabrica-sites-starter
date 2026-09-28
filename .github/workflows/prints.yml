@@ -1,0 +1,61 @@
+# PRINTS — revisão visual automática do site novo.
+# Aba Actions → "Prints" → Run workflow (ou o Claude dispara pela API).
+# Compila o site, tira prints (computador e celular, com e sem animação) e
+# salva no branch "prints" do próprio repositório, pasta prints/<branch>/.
+name: Prints
+
+on:
+  workflow_dispatch:
+    inputs:
+      max:
+        description: "Máximo de páginas"
+        required: false
+        default: "14"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prints-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prints:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Instalar e compilar
+        run: |
+          npm ci --no-audit --no-fund || npm install --no-audit --no-fund
+          npm run build
+
+      - name: Instalar navegador
+        run: |
+          npm install --no-save --no-audit --no-fund --no-package-lock playwright
+          npx playwright install --with-deps chromium
+
+      - name: Tirar prints
+        env:
+          MAX: ${{ inputs.max }}
+        run: node scripts/prints.mjs --max "${MAX:-14}"
+
+      - name: Salvar no branch "prints"
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          PASTA="prints/$(echo "$BRANCH" | tr '/' '-')"
+          mkdir -p /tmp/p && cp -r prints/. /tmp/p/ && rm -rf prints
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin prints:prints 2>/dev/null || true
+          if git show-ref --quiet refs/heads/prints; then git checkout prints; else git checkout --orphan prints && git rm -rfq . ; fi
+          rm -rf "$PASTA" && mkdir -p "$PASTA" && cp -r /tmp/p/. "$PASTA/"
+          echo "Prints de $BRANCH em $(date -u +%FT%TZ) — commit ${GITHUB_SHA::7}" > "$PASTA/LEIA.txt"
+          git add prints && git commit -qm "Prints de $BRANCH (${GITHUB_SHA::7})" && git push -q origin prints
