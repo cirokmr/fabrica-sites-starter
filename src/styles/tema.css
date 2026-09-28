@@ -29,7 +29,7 @@
   /* Cor de destaque para TEXTO sobre fundo claro (se --destaque não tiver contraste). */
   /* --destaque-sobre-claro: #3d55d9; */
 
-  /* Duotone (quando site.json → fotos.tratamento = "duotone"): sombra e luz das fotos. */
+  /* Duotone (site.json → fotos.tratamento = "duotone" ou "misto"): sombra e luz das fotos. */
   --duo-sombra: var(--escuro);
   --duo-luz: var(--claro);
 

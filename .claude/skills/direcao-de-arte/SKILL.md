@@ -40,7 +40,11 @@ nem de outro cliente.
    descreva-a (ela será criada genérica e depois volta para o molde).
 6. **Mapa do site** — páginas novas × páginas antigas, e o que vira redirect.
 7. **Fotos** — quais usar onde (nomes de arquivo em `extraido/imagens-web/`), quais
-   precisam de corte, rotação ou ficam de fora.
+   precisam de corte, rotação ou ficam de fora, e o **tratamento** (`site.json → fotos`):
+   `natural`, `misto` (cor nas fotos pequenas + duotone só nas grandes — o melhor ponto
+   de partida quando as fotos são pequenas), `duotone` (tudo em duas tintas) ou `pb`.
+   Pergunte ao usuário antes de tirar a cor de TODAS as fotos: a cor costuma ser parte
+   do conteúdo (alimento, festa, paisagem).
 8. **O que falta do cliente** — textos, fotos melhores, logo em vetor etc.
 
 ## 3. Mostre antes de construir

@@ -426,22 +426,31 @@ html.reduced .loader { display: none; }
 }
 
 /* ---------- tratamento das fotos (site.json → fotos.tratamento) ----------
-   duotone: foto em duas tintas (sombra/luz), como impressão artesanal — deixa
-   fotos pequenas ou irregulares com cara de escolha, não de defeito.
-   pb: preto e branco com contraste. */
-:is(.fotos-duotone, .fotos-pb) :is(.media, .prose figure, .hero__media) img,
-:is(.fotos-duotone, .fotos-pb) .hero__frame {
-  filter: grayscale(1) contrast(1.12);
-}
-.fotos-duotone :is(.media, .prose figure, .hero__media) {
+   natural: fotos como são.
+   duotone: todas as fotos em duas tintas (--duo-sombra / --duo-luz), como impressão
+            artesanal — fotos pequenas ou irregulares ganham cara de escolha.
+   misto:   cor natural nas fotos pequenas (cartões, galerias, colagem) e duotone só
+            nas superfícies grandes (hero em tela cheia, capa das páginas, "próximo"),
+            onde uma foto de baixa resolução apareceria pixelada.
+   pb:      preto e branco com contraste. */
+.fotos-pb :is(.media, .prose figure, .hero__media) img,
+.fotos-pb .hero__frame { filter: grayscale(1) contrast(1.12); }
+
+/* onde o duotone se aplica em cada modo */
+.fotos-duotone :is(.media, .prose figure, .hero__media),
+.fotos-misto :is(.hero__media, .detail-cover__media, .next__media) {
   isolation: isolate;
   background: var(--duo-luz, var(--claro));
 }
-/* .hero__media já é absoluta (cobre a seção): só as outras viram referência do ::after */
-.fotos-duotone :is(.media, .prose figure) { position: relative; }
 .fotos-duotone :is(.media, .prose figure, .hero__media) img,
-.fotos-duotone .hero__frame { mix-blend-mode: multiply; }
-.fotos-duotone :is(.media, .prose figure, .hero__media)::after {
+.fotos-duotone .hero__frame,
+.fotos-misto :is(.hero__media, .detail-cover__media, .next__media) img,
+.fotos-misto .hero__frame {
+  filter: grayscale(1) contrast(1.12);
+  mix-blend-mode: multiply;
+}
+.fotos-duotone :is(.media, .prose figure, .hero__media)::after,
+.fotos-misto :is(.hero__media, .detail-cover__media, .next__media)::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -450,4 +459,8 @@ html.reduced .loader { display: none; }
   mix-blend-mode: lighten;
   pointer-events: none;
 }
+/* o ::after precisa de um pai posicionado — menos hero e "próximo", que já são absolutos */
+.fotos-duotone :is(.media, .prose figure):not(.hero__media, .next__media) { position: relative; }
+/* "próximo item": a foto de fundo continua escurecida para o título ficar legível */
+:is(.fotos-duotone, .fotos-misto) .next__media img { filter: grayscale(1) contrast(1.12) brightness(0.6); }
 .fotos-duotone .prose figure figcaption { position: relative; z-index: 2; background: var(--bg); padding-top: 10px; margin-top: 0; }
