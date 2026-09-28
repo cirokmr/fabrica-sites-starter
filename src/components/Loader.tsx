@@ -20,7 +20,12 @@ export default function Loader({ esquerda, direita, rotulo }: Props) {
       }
       const smoother = getSmoother();
       smoother?.paused(true);
+      // O contador é o maior texto da primeira tela: é ele que o Google mede como
+      // "maior elemento" (LCP). Por isso ele já aparece pintado no HTML (sem fade)
+      // e muda só o valor do MESMO nó de texto — trocar o textContent cria um nó
+      // novo, que conta como uma pintura nova e empurra o LCP para o fim da abertura.
       const countEl = ref.current!.querySelector<HTMLElement>('.loader__count')!;
+      const countText = countEl.firstChild as Text | null;
       const counter = { v: 0 };
 
       gsap
@@ -30,22 +35,24 @@ export default function Loader({ esquerda, direita, rotulo }: Props) {
             setGone(true);
           },
         })
-        .from('.loader__row', { autoAlpha: 0, y: 20, duration: 1, stagger: 0.1, ease: 'power3.out' }, 0)
+        .from('.loader__row--topo', { autoAlpha: 0, y: 20, duration: 0.8, ease: 'power3.out' }, 0)
         .to(
           counter,
           {
             v: 100,
-            duration: 2,
+            duration: 1.6,
             ease: 'power3.inOut',
             onUpdate: () => {
-              countEl.textContent = String(Math.round(counter.v)).padStart(3, '0');
+              const txt = String(Math.round(counter.v)).padStart(3, '0');
+              if (countText) countText.nodeValue = txt;
+              else countEl.textContent = txt;
             },
           },
           0.1,
         )
-        .to('.loader__bar i', { scaleX: 1, duration: 2, ease: 'power3.inOut' }, 0.1)
-        .to('.loader__panel--escuro', { yPercent: -100, duration: 1.2, ease: 'expo.inOut' }, '+=0.1')
-        .to('.loader__panel--destaque', { yPercent: -100, duration: 1.2, ease: 'expo.inOut' }, '<0.14')
+        .to('.loader__bar i', { scaleX: 1, duration: 1.6, ease: 'power3.inOut' }, 0.1)
+        .to('.loader__panel--escuro', { yPercent: -100, duration: 1.1, ease: 'expo.inOut' }, '+=0.05')
+        .to('.loader__panel--destaque', { yPercent: -100, duration: 1.1, ease: 'expo.inOut' }, '<0.12')
         .call(markIntroDone, [], '<0.35');
     },
     { scope: ref },
@@ -57,7 +64,7 @@ export default function Loader({ esquerda, direita, rotulo }: Props) {
     <div className="loader" ref={ref} aria-hidden="true">
       <div className="loader__panel loader__panel--destaque" />
       <div className="loader__panel loader__panel--escuro">
-        <div className="loader__row mono">
+        <div className="loader__row loader__row--topo mono">
           <span>{esquerda}</span>
           <span>{direita}</span>
         </div>

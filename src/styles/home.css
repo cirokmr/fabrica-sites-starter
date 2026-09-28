@@ -40,6 +40,17 @@ html.reduced .hero__media { clip-path: none; }
   opacity: 0;
 }
 html.reduced .hero__shade { opacity: 1; }
+/* faixa escura no topo da foto: o menu (mix-blend: difference) fica legível mesmo
+   sobre céu claro ou foto colorida */
+.hero__media::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: calc(var(--nav-h, 64px) + 120px);
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--escuro) 62%, transparent), transparent);
+}
 
 .hero__row {
   position: absolute;
