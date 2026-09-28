@@ -13,7 +13,7 @@ site antigo ──/extrair──▶ extraido/ ──/reconstruir──▶ site n
 |---|---|
 | **GitHub** | Guarda o molde e um repositório por cliente (nada se perde) |
 | **Claude Code (nuvem)** | Faz o trabalho: extrai, reconstrói, revisa e salva no GitHub |
-| **GitHub Actions** | Compila e roda o controle de qualidade a cada envio (aba *Actions*) |
+| **GitHub Actions** | Extrai o site antigo e compila + checa a qualidade a cada envio (aba *Actions*) |
 | **Vercel** | Publica cada versão num link de prévia para você e o cliente verem |
 
 ---
@@ -35,19 +35,25 @@ site antigo ──/extrair──▶ extraido/ ──/reconstruir──▶ site n
 No GitHub, abra este repositório → botão verde **Use this template → Create a new repository**
 → nome do cliente (ex.: `site-padaria-do-joao`) → **Private** → *Create*.
 
-### b) Trabalhar com o Claude Code na nuvem
+### b) Extrair o site antigo (no GitHub)
+No repositório do cliente: aba **Actions** → **Extrair site antigo** → **Run workflow** →
+cole a URL do site antigo → **Run workflow**. Em 2 a 5 minutos aparece ✅ e a pasta
+`extraido/` com textos, prints, imagens otimizadas, cores, contatos e todas as URLs antigas.
+(O GitHub tem internet liberada; o ambiente do Claude na nuvem pode não ter.)
+
+### c) Trabalhar com o Claude Code na nuvem
 Abra uma sessão do Claude Code no repositório do cliente e rode **uma etapa de cada vez**,
 conferindo o resultado de cada uma:
 
 | Comando | O que faz | O que você confere |
 |---|---|---|
-| `/extrair https://siteantigo.com.br` | Captura textos, imagens, prints, cores, contatos e URLs | O resumo que o Claude te dá e `extraido/RELATORIO.md` |
+| `/extrair` | Confere a extração e sugere a estrutura do site novo | O resumo que o Claude te dá e `extraido/RELATORIO.md` |
 | `/reconstruir` | Monta o site novo com o conteúdo extraído | O link de prévia da Vercel, no celular e no computador |
 | `/revisar` | Checagem automática + agente revisor independente | `relatorio-qa.md` e `PENDENCIAS.md` |
 
 Ao fim de cada etapa o Claude salva (commit + push) no GitHub.
 
-### c) Publicar
+### d) Publicar
 1. Na Vercel: *Add New… → Project* → importe o repositório do cliente → **Deploy**.
 2. Cada envio para o GitHub gera um **link de prévia** → mande ao cliente.
 3. Aprovado: *Settings → Domains* na Vercel → adicione o domínio do cliente e siga as
@@ -64,7 +70,7 @@ CLAUDE.md                  ← regras da fábrica (o Claude lê em toda sessão)
 ├── settings.json          ← comandos liberados + hook que confere o build
 ├── skills/                ← /extrair, /reconstruir, /revisar
 └── agents/revisor-qa.md   ← inspetor de qualidade independente
-.github/workflows/         ← controle de qualidade automático a cada envio
+.github/workflows/         ← extrair.yml (extração) e qualidade.yml (build + checagem)
 src/
 ├── data/site.json         ← TODO o conteúdo do cliente (textos, contatos, SEO)
 ├── styles/global.css      ← cores e fontes da marca (bloco @theme)

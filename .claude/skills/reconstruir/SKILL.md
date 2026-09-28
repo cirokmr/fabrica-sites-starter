@@ -9,12 +9,11 @@ Instruções extras do usuário (se houver): $ARGUMENTS
 
 Antes de começar, releia o `CLAUDE.md`. A regra nº 1 é **não inventar conteúdo**.
 Se `extraido/paginas/` não existir, pare e peça para rodar `/extrair URL` primeiro.
-Se existir mas `extraido/imagens/` não (sessão nova na nuvem), rode de novo
-`node scripts/extrair.mjs <site_antigo de cliente.json>` para recuperar imagens e prints.
+Se a pasta existir só no GitHub, rode `git pull` antes.
 
 ## 1. Planejar (não pule)
 Leia `extraido/RELATORIO.md`, `identidade.json`, `urls-antigas.json` e **todas** as
-páginas em `extraido/paginas/`. Olhe os screenshots da home (desktop e celular).
+páginas em `extraido/paginas/`. Olhe os prints da home em `extraido/screenshots/` (desktop e celular).
 Escreva um plano curto em `PLANO.md`:
 - mapa do site novo: quais páginas existirão e de qual página antiga vem cada uma;
 - quais páginas antigas viram seções da home ou são juntadas;
@@ -32,8 +31,11 @@ Regra de URLs: mantenha o mesmo caminho quando fizer sentido; quando mudar
 - `theme-color` no `Layout.astro` = cor primária.
 
 ## 3. Imagens
-- Rode `node scripts/otimizar-imagens.mjs` (converte `extraido/imagens` → `public/imagens/*.webp` e gera
-  `mapa-imagens.json`).
+- As imagens já otimizadas (WebP) estão em `extraido/imagens-web/`
+  (`mapa-imagens.json` liga o nome original ao otimizado; `extraido/imagens.json` diz
+  em quais páginas cada uma aparecia e o `alt` original).
+- **Copie para `public/imagens/` só as imagens que o site novo usa.** Ignore ícones
+  velhos, botões em imagem, banners de "site em construção", contadores, selos antigos.
 - Logo: use o arquivo indicado em `identidade.json`. Crie `public/favicon.svg` simples
   com a inicial na cor primária, se não houver favicon melhor.
 - Imagem de compartilhamento: gere `public/imagens/og.jpg` (1200x630) a partir da

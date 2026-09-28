@@ -1,0 +1,95 @@
+# EXTRAÇÃO DO SITE ANTIGO — roda aqui no GitHub, que tem acesso à internet.
+#
+# Como usar (no repositório do CLIENTE, não no molde):
+#   aba Actions → "Extrair site antigo" → Run workflow → cole a URL → Run workflow
+# Em poucos minutos o material aparece na pasta extraido/ do repositório
+# (textos, prints, imagens otimizadas, cores, contatos, URLs antigas).
+name: Extrair site antigo
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Endereço do site antigo (ex.: https://www.padariadojoao.com.br)"
+        required: true
+      max_paginas:
+        description: "Máximo de páginas a extrair"
+        required: false
+        default: "60"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: extracao-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  extrair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Não rodar no molde
+        if: ${{ github.event.repository.is_template }}
+        run: |
+          echo "::error::Este é o repositório MOLDE (template). Crie o repositório do cliente com 'Use this template' e rode a extração lá."
+          exit 1
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Instalar dependências e navegador
+        run: |
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium
+
+      - name: Extrair o site antigo
+        env:
+          URL_ANTIGA: ${{ inputs.url }}
+          MAX_PAGINAS: ${{ inputs.max_paginas }}
+        run: node scripts/extrair.mjs "$URL_ANTIGA" --max "$MAX_PAGINAS"
+
+      - name: Otimizar imagens
+        run: node scripts/otimizar-imagens.mjs
+
+      - name: Atualizar ficha do cliente
+        env:
+          URL_ANTIGA: ${{ inputs.url }}
+          REPO: ${{ github.event.repository.name }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            const f = "cliente.json";
+            const c = fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, "utf8")) : {
+              cliente: process.env.REPO, criado_em: new Date().toISOString().slice(0, 10), observacoes: ""
+            };
+            c.site_antigo = process.env.URL_ANTIGA;
+            c.status = "extraido";
+            c.extraido_em = new Date().toISOString();
+            fs.writeFileSync(f, JSON.stringify(c, null, 2) + "\n");
+          '
+
+      - name: Resumo
+        run: cat extraido/RELATORIO.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Salvar no repositório
+        env:
+          URL_ANTIGA: ${{ inputs.url }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add extraido cliente.json
+          git commit -m "Extração do site antigo: $URL_ANTIGA" || echo "Nada novo para salvar"
+          git pull --rebase
+          git push
+
+      - name: Guardar imagens originais (download opcional)
+        uses: actions/upload-artifact@v4
+        with:
+          name: imagens-originais
+          path: extraido/imagens/
+          if-no-files-found: ignore
+          retention-days: 30

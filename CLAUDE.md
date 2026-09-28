@@ -16,7 +16,8 @@ fácil de manter. Siga estas regras em toda sessão.
 | Cores e fontes da marca | bloco `@theme` em `src/styles/global.css` |
 | Componentes de seção (reutilizáveis) | `src/components/` |
 | Páginas | `src/pages/` (1 arquivo = 1 URL) |
-| Imagens otimizadas | `public/imagens/` (geradas por `npm run imagens`) |
+| Imagens otimizadas do site antigo | `extraido/imagens-web/` (WebP, geradas por `npm run imagens`) |
+| Imagens usadas no site novo | `public/imagens/` (copiadas de `extraido/imagens-web/`) |
 | URLs antigas → novas | `redirects.json` |
 | Material do site antigo (só leitura) | `extraido/` |
 | Ficha/status do cliente | `cliente.json` |
@@ -40,7 +41,7 @@ fácil de manter. Siga estas regras em toda sessão.
 - Toda `<img>` tem `alt` (descritivo; `alt=""` só para imagem decorativa), `width/height`
   quando possível e `loading="lazy"` (menos a primeira imagem da página).
 - Cada página: um único `<h1>`, `titulo` e `descricao` próprios no `<Layout>`.
-- Imagens sempre em WebP via `npm run imagens`; nenhuma acima de 300 KB.
+- Imagens sempre em WebP (de `extraido/imagens-web/`); nenhuma acima de 300 KB.
 - Mobile first: confira sempre em 390px de largura.
 
 ## SEO e migração (não pode falhar)
@@ -60,18 +61,19 @@ Atualize o campo `status` de `cliente.json` ao fim de cada etapa.
 ## Trabalhando na nuvem (modo padrão)
 - O ambiente da nuvem é temporário: **ao fim de cada etapa, faça commit e push**.
   Trabalho não enviado ao GitHub se perde.
-- Se `npm install` falhar (a rede da nuvem pode bloquear o npm), siga assim mesmo:
-  `extrair.mjs` e `otimizar-imagens.mjs` usam o Playwright e o sharp já instalados no
-  ambiente. Não tente contornar o bloqueio.
+- A nuvem pode não ter acesso à internet nem ao npm. Não tente contornar o bloqueio:
+  - a **extração** do site antigo roda pelo GitHub Actions (workflow *Extrair site
+    antigo*, veja a skill `/extrair`);
+  - `extrair.mjs` e `otimizar-imagens.mjs` também funcionam sem `npm install`, usando o
+    Playwright e o sharp já instalados no ambiente, quando houver internet.
 - Sem `node_modules` não dá para rodar `npm run build`/`checar` aqui. Quem compila e
   checa é o **GitHub Actions** (`.github/workflows/qualidade.yml`) e a **Vercel**, a cada
   push. Nesse caso, revise o código com atenção redobrada antes do push e diga ao usuário
   para conferir a aba *Actions* e o link de prévia.
 - Depois de mudar `redirects.json`, rode `node scripts/gerar-redirects.mjs` e inclua
   `vercel.json` e `public/_redirects` no commit (a Vercel lê o `vercel.json` do repositório).
-- De `extraido/`, só os textos vão para o Git (páginas em Markdown, JSONs, relatório);
-  prints e imagens originais ficam de fora. Numa sessão nova, se precisar dos prints,
-  rode a extração de novo. `PLANO.md` e `PENDENCIAS.md` também vão no commit: são a
+- De `extraido/`, tudo vai para o Git menos `extraido/imagens/` (originais pesadas):
+  textos, JSONs, prints (`screenshots/*.jpg`) e imagens otimizadas (`imagens-web/`). `PLANO.md` e `PENDENCIAS.md` também vão no commit: são a
   memória do projeto entre sessões.
 
 ## Definição de pronto

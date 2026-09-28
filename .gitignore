@@ -3,10 +3,8 @@ dist/
 .astro/
 .DS_Store
 .env
-# Do material extraído, só os TEXTOS vão para o Git (são a memória do projeto e o
-# GitHub Actions usa para checar conteúdo e redirects). Prints e imagens originais
-# são pesados e ficam de fora — as imagens otimizadas vão em public/imagens.
-extraido/screenshots/
+# Do material extraído vai para o Git: textos, prints (JPG) e imagens otimizadas
+# (extraido/imagens-web). Só as imagens ORIGINAIS ficam de fora (pesadas).
 extraido/imagens/
 relatorio-qa.md
 .claude/.ultimo-build

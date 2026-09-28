@@ -7,8 +7,8 @@
  *
  *   extraido/
  *   ├── paginas/*.md          texto de cada página em Markdown (+ título, descrição)
- *   ├── screenshots/*.png     print de cada página (referência visual)
- *   ├── imagens/              imagens originais baixadas
+ *   ├── screenshots/*.jpg     print de cada página (referência visual)
+ *   ├── imagens/              imagens originais baixadas (fora do Git)
  *   ├── imagens.json          de onde veio cada imagem, alt, em quais páginas aparece
  *   ├── urls-antigas.json     TODAS as URLs antigas (base para os redirects 301)
  *   ├── identidade.json       cores, fontes, logo, contatos, redes, menu
@@ -379,10 +379,10 @@ async function main() {
       while (slugsUsados.has(slug)) slug += '-2';
       slugsUsados.add(slug);
 
-      await pagina.screenshot({ path: path.join(DIR.shots, `${slug}.png`), fullPage: true }).catch(() => {});
+      await pagina.screenshot({ path: path.join(DIR.shots, `${slug}.jpg`), fullPage: true, type: 'jpeg', quality: 60 }).catch(() => {});
       if (slug === 'home') {
         await pagina.setViewportSize({ width: 390, height: 844 });
-        await pagina.screenshot({ path: path.join(DIR.shots, 'home-celular.png'), fullPage: true }).catch(() => {});
+        await pagina.screenshot({ path: path.join(DIR.shots, 'home-celular.jpg'), fullPage: true, type: 'jpeg', quality: 60 }).catch(() => {});
         await pagina.setViewportSize({ width: 1366, height: 900 });
       }
 
@@ -392,7 +392,7 @@ async function main() {
         `titulo: ${yaml(dados.titulo)}`,
         `descricao: ${yaml(dados.descricao)}`,
         `h1: ${yaml(dados.h1.join(' | '))}`,
-        `screenshot: ${yaml(`../screenshots/${slug}.png`)}`,
+        `screenshot: ${yaml(`../screenshots/${slug}.jpg`)}`,
         `tem_formulario: ${dados.temFormulario}`,
         '---',
         '',
