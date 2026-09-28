@@ -60,6 +60,8 @@ mês, anexos) e a lista de arquivos de conteúdo que você vai criar.
 4. Dispare o workflow **Prints** no branch, baixe os prints (`git fetch origin prints`)
    e **olhe** home (abertura + rolagens), celular e uma página de cada tipo. Corrija
    texto cortado, sobreposição, foto ruim, contraste. Repita os prints se mudou algo visual.
-5. `cliente.json → "status": "reconstruido"`, commit e push.
+5. Apague a prancha (`src/app/prancha/` e `conteudo/prancha.json`) e as imagens que só ela
+   usava — ela é página interna da fase de direção de arte.
+   `cliente.json → "status": "reconstruido"`, commit e push.
 6. Responda com: link de prévia da Vercel, 2–3 prints principais, redirects, pendências
    do cliente. Próximo: `/revisar`.

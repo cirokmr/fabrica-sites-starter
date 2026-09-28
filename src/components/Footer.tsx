@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { site, linkWhatsapp } from '@/lib/site';
+import { site, linkWhatsapp, linkTel } from '@/lib/site';
 import { noticias, projetos, periodo } from '@/lib/content';
 import BackToTop from './BackToTop';
 import Marca from './Marca';
@@ -61,7 +61,7 @@ export default function Footer() {
             <ul>
               {contato.telefone && (
                 <li>
-                  <a className="u-link" href={`tel:${contato.telefone.replace(/\D/g, '')}`}>
+                  <a className="u-link" href={linkTel(contato.telefone)}>
                     {contato.telefone}
                   </a>
                 </li>

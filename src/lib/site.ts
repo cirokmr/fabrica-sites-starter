@@ -24,7 +24,7 @@ export type SecaoManifesto = {
   texto: string;
   figura?: Imagem & { legenda?: string };
 };
-export type SecaoFaixa = { tipo: 'faixa'; palavras: string[]; rotulo?: string };
+export type SecaoFaixa = { tipo: 'faixa'; palavras: string[]; rotulo?: string; estilo?: 'contorno' | 'apagado' };
 export type SecaoColecao = {
   tipo: 'colecao';
   rotulo?: string;
@@ -92,6 +92,13 @@ export type Site = {
 };
 
 export const site = dados as unknown as Site;
+
+/** Link de telefone no formato internacional (Brasil por padrão): tel:+554733520118 */
+export const linkTel = (telefone?: string) => {
+  const d = (telefone ?? '').replace(/\D/g, '');
+  if (!d) return '';
+  return `tel:+${d.startsWith('55') && d.length > 11 ? d : `55${d.replace(/^0/, '')}`}`;
+};
 
 /** Link de WhatsApp a partir do número (só dígitos). */
 export const linkWhatsapp = (numero?: string) =>

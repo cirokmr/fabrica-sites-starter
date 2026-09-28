@@ -29,6 +29,7 @@ export type Projeto = {
   titulo: string;
   subtitulo: string;
   tipo: string;
+  quando: string; // data/período legível, ex.: "Março de 2012" (opcional)
   resumo: string;
   tags: string[];
   capa: string | null;
@@ -45,6 +46,7 @@ export const projetos: Projeto[] = lerPasta('projetos')
     titulo: str(dados.titulo, slug),
     subtitulo: str(dados.subtitulo),
     tipo: str(dados.tipo),
+    quando: str(dados.quando),
     resumo: str(dados.resumo),
     tags: lista(dados.tags),
     capa: str(dados.capa) || null,

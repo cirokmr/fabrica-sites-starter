@@ -32,6 +32,8 @@ nem de outro cliente.
 4. **Tipografia** — display (títulos em caixa-alta), serif itálica (acentos), mono
    (metadados). Só fontes do `@fontsource` (Google Fonts self-hosted). Diga o pacote npm
    de cada uma e se o display tem eixo de largura (`wdth`) — senão `--display-largura: 100%`.
+   Display em fonte **variável** (quase todas do `@fontsource-variable`): na seção `faixa`
+   use `"estilo": "apagado"` — o contorno vazado desenha linhas cruzando as letras.
    Evite o trio do Tombô (Archivo expandida + Instrument Serif + IBM Plex Mono) a menos
    que o usuário peça.
 5. **Home, seção a seção** — quais seções do molde (`hero`, `manifesto`, `faixa`,

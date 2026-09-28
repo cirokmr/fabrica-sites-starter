@@ -15,7 +15,7 @@
 
 /* ---------- Cabeçalho de página ---------- */
 .page-hero { padding: calc(var(--nav-h) + clamp(60px, 10vw, 150px)) 0 clamp(50px, 7vw, 100px); }
-.page-hero__title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 0.3em; margin: 0; }
+.page-hero__title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.12em 0.3em; margin: 0; }
 .page-hero__lead { max-width: 40ch; margin: clamp(24px, 3vw, 44px) 0 0; line-height: 1.3; color: var(--muted); }
 
 /* ---------- Ano (arquivo de news) ---------- */

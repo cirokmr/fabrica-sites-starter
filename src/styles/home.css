@@ -169,6 +169,9 @@ html.reduced .hero__caption { display: none; }
   color: transparent;
   -webkit-text-stroke: 1.5px var(--claro);
 }
+/* Alternativa ao contorno: fontes VARIÁVEIS têm contornos sobrepostos e o
+   text-stroke desenha linhas cruzando as letras. Aí use estilo "apagado". */
+.marquee__row--apagado .display { color: color-mix(in srgb, var(--claro) 22%, transparent); }
 .marquee__marca { width: 0.5em; height: 0.5em; }
 
 /* ---------- Acervo (horizontal) ---------- */
@@ -273,12 +276,16 @@ html.reduced .hero__caption { display: none; }
 }
 .collage__piece.p2,
 .collage__piece.p5 { mix-blend-mode: multiply; filter: grayscale(1) contrast(1.15); }
+/* nos modos natural e misto, a colagem fica toda em cor */
+:is(.fotos-natural, .fotos-misto) .collage__piece:is(.p2, .p5) { mix-blend-mode: normal; filter: none; }
+.collage__text .eyebrow { justify-content: center; }
 .p1 { width: 17vw; aspect-ratio: 3 / 4; left: 4vw; top: 10%; }
 .p2 { width: 23vw; aspect-ratio: 4 / 3; right: 5vw; top: 6%; }
 .p3 { width: 15vw; aspect-ratio: 4 / 5; left: 11vw; bottom: 6%; }
 .p4 { width: 21vw; aspect-ratio: 3 / 2; right: 9vw; bottom: 12%; }
 .p5 { width: 11vw; aspect-ratio: 1; left: 45vw; top: 3%; }
 @media (max-width: 899px) {
+  .collage { min-height: 118svh; padding-block: 16vh; }
   .p1 { width: 30vw; left: -4vw; top: 3%; }
   .p2 { width: 36vw; right: -6vw; top: 7%; }
   .p3 { width: 28vw; left: 3vw; bottom: 2%; }

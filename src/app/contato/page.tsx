@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import ContactForm from '@/components/ContactForm';
 import Marca from '@/components/Marca';
-import { site, linkWhatsapp } from '@/lib/site';
+import { site, linkWhatsapp, linkTel } from '@/lib/site';
 
 const t = site.contatoPagina;
 
@@ -48,7 +48,7 @@ export default function ContatoPage() {
                 <ul className="contact__social">
                   {contato.telefone && (
                     <li>
-                      <a className="u-link" href={`tel:${contato.telefone.replace(/\D/g, '')}`}>
+                      <a className="u-link" href={linkTel(contato.telefone)}>
                         {contato.telefone}
                       </a>
                     </li>

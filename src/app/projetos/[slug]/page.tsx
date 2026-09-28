@@ -46,6 +46,7 @@ export default async function ProjetoPage({ params }: Params) {
               <span>
                 {t.prefixoNumero} {p.numero}
               </span>
+              {p.quando && <span>{p.quando}</span>}
               {p.tipo && <span className="muted">{p.tipo}</span>}
             </div>
             <h1 className="display fs-xxl detail-hero__title" data-split="lines" data-now>
@@ -98,6 +99,7 @@ export default async function ProjetoPage({ params }: Params) {
           html={p.html}
           ficha={[
             { rotulo: 'Registro', valor: `${t.prefixoNumero} ${p.numero}`, grande: true },
+            { rotulo: 'Quando', valor: p.quando },
             { rotulo: 'Tipo', valor: p.tipo },
             { rotulo: 'Temas', valor: p.tags.join(', ') },
           ]}

@@ -13,6 +13,8 @@ const REPEAT = 4; // cópias por grupo: o grupo precisa ser mais largo que a tel
 export default function Faixa({ dados }: { dados: SecaoFaixa }) {
   const ref = useRef<HTMLElement>(null);
   const palavras = dados.palavras.length ? dados.palavras : ['—'];
+  // 2ª faixa: contorno (padrão) ou "apagado" — use apagado com fontes variáveis
+  const segunda = dados.estilo === 'apagado' ? ' marquee__row--apagado' : ' marquee__row--outline';
 
   useScene(() => {
     if (reducedMotion()) return;
@@ -42,7 +44,7 @@ export default function Faixa({ dados }: { dados: SecaoFaixa }) {
   }, ref);
 
   const row = (outline: boolean, desloc: number) => (
-    <div className={`marquee__row${outline ? ' marquee__row--outline' : ''}`} aria-hidden="true">
+    <div className={`marquee__row${outline ? segunda : ''}`} aria-hidden="true">
       <div className="marquee__track">
         {[0, 1].map((copy) => (
           <div className="marquee__group" key={copy}>
