@@ -180,11 +180,16 @@ const dirPaginas = path.join(EXTRAIDO, 'paginas');
 if (fs.existsSync(dirPaginas)) {
   const novo = normalizar(textoDoSiteNovo);
   const linhaTabela = ['| Página antiga | Trechos encontrados no site novo |', '|---|---|'];
-  for (const arq of fs.readdirSync(dirPaginas).filter((f) => f.endsWith('.md'))) {
+  // listagens (home antiga, categorias, arquivos por mês) só repetem as matérias
+  const ehListagem = (f) => /^(category|tag|author|page)__|^\d{4}__\d{2}\.md$|^\d{4}\.md$/.test(f);
+  for (const arq of fs.readdirSync(dirPaginas).filter((f) => f.endsWith('.md') && !ehListagem(f))) {
     const corpo = fs.readFileSync(path.join(dirPaginas, arq), 'utf8').replace(/^---[\s\S]*?---/, '');
     const trechos = corpo.split('\n')
       .map((l) => l.trim())
-      .filter((l) => l.length > 60 && !/^(#|!\[|\||>)/.test(l))
+      // parágrafos de texto de verdade: tira títulos, imagens, tabelas, citações e linhas
+      // que são só links (navegação "anterior/próxima" do WordPress, menus, rodapés)
+      .filter((l) => l.length > 60 && !/^(#|!\[|\||>|\[)/.test(l))
+      .filter((l) => l.replace(/\[([^\]]*)\]\([^)]*\)/g, '').replace(/[\s·|—-]/g, '').length > 40)
       .map((l) => normalizar(l.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/[*_]/g, '')).slice(0, 60))
       .filter((t) => t.length > 30);
     if (!trechos.length) continue;
