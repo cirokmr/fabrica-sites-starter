@@ -1,0 +1,38 @@
+---
+import site from '../data/site.json';
+const { empresa, menu } = site;
+const ano = new Date().getFullYear();
+const redes = Object.entries(empresa.redes).filter(([, url]) => url);
+---
+
+<footer class="bg-texto text-white/80">
+  <div class="container-site grid gap-10 py-12 sm:grid-cols-3">
+    <div>
+      <p class="font-titulo text-lg font-bold text-white">{empresa.nome}</p>
+      <p class="mt-2 text-sm">{empresa.slogan}</p>
+    </div>
+
+    <nav aria-label="Rodapé">
+      <p class="font-semibold text-white">Navegação</p>
+      <ul class="mt-2 space-y-1 text-sm">
+        {menu.map((item) => <li><a href={item.link} class="text-white/80 no-underline hover:text-white">{item.texto}</a></li>)}
+      </ul>
+    </nav>
+
+    <address class="space-y-1 text-sm not-italic">
+      <p class="font-semibold text-white">Contato</p>
+      {empresa.telefone && <p><a href={`tel:${empresa.telefone.replace(/\D/g, '')}`} class="text-white/80 hover:text-white">{empresa.telefone}</a></p>}
+      {empresa.email && <p><a href={`mailto:${empresa.email}`} class="text-white/80 hover:text-white">{empresa.email}</a></p>}
+      {empresa.endereco && <p>{empresa.endereco}</p>}
+      {empresa.horario && <p>{empresa.horario}</p>}
+      {redes.length > 0 && (
+        <p class="flex gap-3 pt-2">
+          {redes.map(([nome, url]) => <a href={url} target="_blank" rel="noopener" class="capitalize text-white/80 hover:text-white">{nome}</a>)}
+        </p>
+      )}
+    </address>
+  </div>
+  <div class="border-t border-white/10 py-4 text-center text-xs">
+    © {ano} {empresa.nome}. Todos os direitos reservados.
+  </div>
+</footer>

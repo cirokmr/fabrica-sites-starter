@@ -1,0 +1,2 @@
+cliente,site_antigo,status,data_inicio,min_extrair,min_reconstruir,min_revisar,min_ajustes_cliente,paginas,problemas_repetidos,data_publicacao,valor,mensalidade
+exemplo-padaria,https://www.exemplo-antigo.com.br,publicado,2026-10-01,5,40,20,30,6,"logo em baixa resolução; texto com acentos quebrados",2026-10-08,,

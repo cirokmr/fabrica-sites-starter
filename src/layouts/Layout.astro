@@ -1,0 +1,76 @@
+---
+// Layout base de TODAS as páginas: SEO, Open Graph, dados estruturados,
+// cabeçalho, rodapé e botão flutuante de WhatsApp.
+import '../styles/global.css';
+import site from '../data/site.json';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import BotaoWhatsApp from '../components/BotaoWhatsApp.astro';
+
+interface Props {
+  titulo?: string;       // título desta página (sem o nome da empresa)
+  descricao?: string;    // meta description desta página (até ~160 caracteres)
+  imagem?: string;       // imagem de compartilhamento (opcional)
+  semIndex?: boolean;    // true = não aparecer no Google (ex.: 404)
+}
+
+const { titulo, descricao, imagem, semIndex = false } = Astro.props;
+const { empresa, seo } = site;
+
+const tituloFinal = titulo ? `${titulo} | ${empresa.nome}` : seo.titulo_padrao;
+const descricaoFinal = descricao || seo.descricao_padrao;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const imagemOg = new URL(imagem || seo.imagem_og, Astro.site);
+
+// Dados estruturados (Schema.org) — ajudam o Google a mostrar telefone, endereço etc.
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': seo.tipo_negocio || 'LocalBusiness',
+  name: empresa.nome,
+  description: seo.descricao_padrao,
+  url: seo.url,
+  telephone: empresa.telefone || undefined,
+  email: empresa.email || undefined,
+  address: empresa.endereco || undefined,
+  logo: empresa.logo ? new URL(empresa.logo, Astro.site).href : undefined,
+  sameAs: Object.values(empresa.redes).filter(Boolean),
+};
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{tituloFinal}</title>
+    <meta name="description" content={descricaoFinal} />
+    <link rel="canonical" href={canonical} />
+    {semIndex && <meta name="robots" content="noindex" />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content={empresa.nome} />
+    <meta property="og:title" content={tituloFinal} />
+    <meta property="og:description" content={descricaoFinal} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={imagemOg} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="theme-color" content="#1d4ed8" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  </head>
+  <body class="flex min-h-screen flex-col">
+    <a href="#conteudo" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2">
+      Pular para o conteúdo
+    </a>
+    <Header />
+    <main id="conteudo" class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+    <BotaoWhatsApp />
+  </body>
+</html>

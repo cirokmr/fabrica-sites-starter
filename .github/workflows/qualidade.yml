@@ -1,0 +1,45 @@
+# Controle de qualidade automático.
+# A cada envio (push) ou pull request, o GitHub instala tudo, compila o site
+# e roda "npm run checar". Resultado: aba "Actions" do repositório
+# (✅ verde = passou, ❌ vermelho = abra para ver o relatório).
+name: Qualidade
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-e-checagem:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Instalar dependências
+        run: npm install --no-audit --no-fund
+
+      - name: Compilar o site
+        run: npm run build
+
+      - name: Controle de qualidade
+        run: npm run checar
+
+      - name: Mostrar relatório
+        if: always()
+        run: |
+          if [ -f relatorio-qa.md ]; then cat relatorio-qa.md >> "$GITHUB_STEP_SUMMARY"; fi
+
+      - name: Guardar relatório e site compilado
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-e-site
+          path: |
+            relatorio-qa.md
+            dist/
+          if-no-files-found: ignore

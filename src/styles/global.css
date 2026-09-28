@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+/*
+  TOKENS DA MARCA — é só isto que muda de um cliente para outro no visual.
+  O /reconstruir preenche com as cores e fontes de extraido/identidade.json.
+  Uso nos componentes: bg-primaria, text-primaria, bg-secundaria, font-titulo...
+*/
+@theme {
+  --color-primaria: #1d4ed8;
+  --color-primaria-escura: #1e3a8a;
+  --color-secundaria: #f59e0b;
+  --color-texto: #1f2937;
+  --color-suave: #6b7280;
+  --color-fundo: #ffffff;
+  --color-fundo-alt: #f3f4f6;
+
+  --font-titulo: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-texto: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body {
+    @apply bg-fundo text-texto font-texto antialiased;
+  }
+  h1, h2, h3, h4 {
+    @apply font-titulo text-texto;
+    text-wrap: balance;
+  }
+  a { @apply text-primaria; }
+}
+
+@layer components {
+  .container-site { @apply mx-auto w-full max-w-6xl px-4 sm:px-6; }
+  .secao { @apply py-16 sm:py-20; }
+  .titulo-secao { @apply mb-10 text-center text-3xl font-bold sm:text-4xl; }
+  .botao {
+    @apply inline-flex items-center justify-center rounded-lg bg-primaria px-6 py-3 font-semibold text-white no-underline shadow-sm transition hover:bg-primaria-escura focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primaria;
+  }
+  .botao-secundario {
+    @apply inline-flex items-center justify-center rounded-lg border-2 border-white px-6 py-3 font-semibold text-white no-underline transition hover:bg-white hover:text-primaria;
+  }
+}

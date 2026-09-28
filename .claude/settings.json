@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install)",
+      "Bash(npm run *)",
+      "Bash(npx playwright install chromium)",
+      "Bash(node scripts/*)",
+      "Bash(npx astro *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git push)"
+    ],
+    "deny": [
+      "Bash(git push --force *)",
+      "Bash(rm -rf *)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node scripts/hook-build.mjs",
+            "timeout": 180
+          }
+        ]
+      }
+    ]
+  }
+}

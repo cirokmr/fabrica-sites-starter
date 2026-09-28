@@ -1,0 +1,25 @@
+---
+// Depoimentos REAIS de clientes. Nunca invente: se o site antigo não tem,
+// a seção não aparece (lista vazia = nada é renderizado).
+interface Depoimento { nome: string; texto: string; cargo?: string }
+interface Props { titulo?: string; itens: Depoimento[] }
+const { titulo = 'O que dizem nossos clientes', itens } = Astro.props;
+---
+
+{itens.length > 0 && (
+  <section class="secao bg-fundo-alt">
+    <div class="container-site">
+      <h2 class="titulo-secao">{titulo}</h2>
+      <div class="grid gap-6 md:grid-cols-3">
+        {itens.map((d) => (
+          <figure class="rounded-xl bg-white p-6 shadow-sm">
+            <blockquote class="text-texto">“{d.texto}”</blockquote>
+            <figcaption class="mt-4 text-sm font-semibold">
+              {d.nome}{d.cargo && <span class="font-normal text-suave"> — {d.cargo}</span>}
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+)}

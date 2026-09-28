@@ -1,0 +1,29 @@
+{
+  "name": "fabrica-sites-starter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Molde da fábrica de sites: reconstrói sites antigos em Astro + Tailwind.",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "node scripts/gerar-redirects.mjs && astro build",
+    "preview": "astro preview",
+    "extrair": "node scripts/extrair.mjs",
+    "imagens": "node scripts/otimizar-imagens.mjs",
+    "checar": "node scripts/checar.mjs",
+    "novo": "node scripts/novo-cliente.mjs",
+    "lote": "node scripts/lote.mjs",
+    "redirects": "node scripts/gerar-redirects.mjs",
+    "navegador": "playwright install chromium"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.5.0",
+    "@tailwindcss/vite": "^4.1.0",
+    "astro": "^5.13.0",
+    "tailwindcss": "^4.1.0"
+  },
+  "devDependencies": {
+    "playwright": "^1.55.0",
+    "sharp": "^0.34.0"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "redirects": [
+    {
+      "source": "/quem-somos.html",
+      "destination": "/sobre",
+      "permanent": true
+    },
+    {
+      "source": "/fale-conosco.php",
+      "destination": "/contato",
+      "permanent": true
+    }
+  ]
+}

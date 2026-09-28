@@ -1,0 +1,4 @@
+# Uma linha por cliente:  nome-do-cliente  https://site-antigo
+# Linhas com # são ignoradas. Rode com: npm run lote
+# padaria-do-joao https://www.padariadojoao.com.br
+# oficina-silva https://www.oficinasilva.com.br

@@ -1,0 +1,45 @@
+---
+// Cabeçalho fixo com logo e menu. O menu vem de site.json -> "menu".
+// No celular vira um menu "hambúrguer" (sem JavaScript de framework).
+import site from '../data/site.json';
+const { empresa, menu } = site;
+const atual = Astro.url.pathname.replace(/\/$/, '') || '/';
+const ativo = (link: string) => (link.replace(/\/$/, '') || '/') === atual;
+---
+
+<header class="sticky top-0 z-40 border-b border-black/5 bg-white/90 backdrop-blur">
+  <div class="container-site flex h-16 items-center justify-between gap-4">
+    <a href="/" class="flex items-center gap-2 no-underline" aria-label={`${empresa.nome} — página inicial`}>
+      {empresa.logo
+        ? <img src={empresa.logo} alt={empresa.nome} class="h-10 w-auto" width="160" height="40" />
+        : <span class="font-titulo text-xl font-bold text-texto">{empresa.nome}</span>}
+    </a>
+
+    <nav aria-label="Menu principal" class="hidden md:block">
+      <ul class="flex items-center gap-6">
+        {menu.map((item) => (
+          <li>
+            <a
+              href={item.link}
+              class:list={['font-medium no-underline transition hover:text-primaria', ativo(item.link) ? 'text-primaria' : 'text-texto']}
+              aria-current={ativo(item.link) ? 'page' : undefined}
+            >{item.texto}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <details class="relative md:hidden">
+      <summary class="flex cursor-pointer list-none items-center rounded p-2 [&::-webkit-details-marker]:hidden" aria-label="Abrir menu">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+      </summary>
+      <nav aria-label="Menu principal (celular)" class="absolute right-0 mt-2 w-56 rounded-lg border border-black/5 bg-white p-2 shadow-lg">
+        <ul>
+          {menu.map((item) => (
+            <li><a href={item.link} class="block rounded px-3 py-2 text-texto no-underline hover:bg-fundo-alt">{item.texto}</a></li>
+          ))}
+        </ul>
+      </nav>
+    </details>
+  </div>
+</header>

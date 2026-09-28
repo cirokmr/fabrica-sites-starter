@@ -1,0 +1,32 @@
+---
+// Primeira dobra do site: título grande + chamada + botão.
+// Com imagem: foto de fundo escurecida. Sem imagem: fundo na cor primária.
+interface Props {
+  titulo: string;
+  subtitulo?: string;
+  botaoTexto?: string;
+  botaoLink?: string;
+  imagem?: string;
+}
+const { titulo, subtitulo, botaoTexto, botaoLink, imagem } = Astro.props;
+---
+
+<section class="relative isolate overflow-hidden bg-primaria text-white">
+  {imagem && (
+    <>
+      <img src={imagem} alt="" class="absolute inset-0 -z-10 h-full w-full object-cover" fetchpriority="high" />
+      <div class="absolute inset-0 -z-10 bg-black/55" aria-hidden="true"></div>
+    </>
+  )}
+  <div class="container-site py-24 sm:py-32">
+    <div class="max-w-2xl">
+      <h1 class="text-4xl font-extrabold leading-tight text-white sm:text-5xl">{titulo}</h1>
+      {subtitulo && <p class="mt-5 text-lg text-white/90 sm:text-xl">{subtitulo}</p>}
+      {botaoTexto && botaoLink && (
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href={botaoLink} class="botao bg-secundaria text-texto hover:bg-white">{botaoTexto}</a>
+        </div>
+      )}
+    </div>
+  </div>
+</section>

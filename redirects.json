@@ -1,0 +1,7 @@
+{
+  "_comentario": "Cada URL do site antigo que mudou de endereço entra aqui. Esquerda = caminho antigo, direita = caminho novo. O comando /reconstruir preenche isto a partir de extraido/urls-antigas.json.",
+  "redirects": {
+    "/quem-somos.html": "/sobre",
+    "/fale-conosco.php": "/contato"
+  }
+}
