@@ -88,6 +88,7 @@ export type Site = {
   contatoPagina: { rotulo: string; titulo: Titulo; texto: string; descricao: string; campoMensagem: string };
   rodape: { rotulo: string; titulo: Titulo; texto: string; botao: string; palavra: string };
   naoEncontrada: { titulo: string; texto: string; botao: string };
+  fotos?: { tratamento: 'natural' | 'duotone' | 'pb' };
 };
 
 export const site = dados as unknown as Site;

@@ -108,7 +108,10 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   line-height: 1.4;
 }
 .muted { color: var(--muted); }
-.accent { color: var(--destaque); }
+.accent { color: var(--acento, var(--destaque)); }
+/* Em fundo claro a cor de destaque pode não ter contraste para texto:
+   o tema do cliente define --destaque-sobre-claro quando precisar. */
+.tema-claro { --acento: var(--destaque-sobre-claro, var(--destaque)); }
 
 .fs-mega { font-size: var(--fs-mega); }
 .fs-xxl { font-size: var(--fs-xxl); }
@@ -421,3 +424,29 @@ html.reduced .loader { display: none; }
   .grain, .dot-live { animation: none; }
   .nav, .u-link::after, .btn::before, .arrow-link .arrow { transition: none; }
 }
+
+/* ---------- tratamento das fotos (site.json → fotos.tratamento) ----------
+   duotone: foto em duas tintas (sombra/luz), como impressão artesanal — deixa
+   fotos pequenas ou irregulares com cara de escolha, não de defeito.
+   pb: preto e branco com contraste. */
+:is(.fotos-duotone, .fotos-pb) :is(.media, .prose figure, .hero__media) img,
+:is(.fotos-duotone, .fotos-pb) .hero__frame {
+  filter: grayscale(1) contrast(1.12);
+}
+.fotos-duotone :is(.media, .prose figure, .hero__media) {
+  position: relative;
+  isolation: isolate;
+  background: var(--duo-luz, var(--claro));
+}
+.fotos-duotone :is(.media, .prose figure, .hero__media) img,
+.fotos-duotone .hero__frame { mix-blend-mode: multiply; }
+.fotos-duotone :is(.media, .prose figure, .hero__media)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: var(--duo-sombra, var(--escuro));
+  mix-blend-mode: lighten;
+  pointer-events: none;
+}
+.fotos-duotone .prose figure figcaption { position: relative; z-index: 2; background: var(--bg); padding-top: 10px; margin-top: 0; }

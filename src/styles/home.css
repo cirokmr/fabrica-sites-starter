@@ -11,7 +11,7 @@
 .hero {
   /* a palavra gigante ocupa ~94% da largura: cada letra mede ~0,94em no display
      expandido; --letras vem do componente (nº de letras da palavra) */
-  --word: min(calc(94vw / (var(--letras, 5) * 0.94)), 34vh);
+  --word: min(calc(94vw / (var(--letras, 5) * var(--display-em-por-letra, 0.94))), 34vh);
   position: relative;
   height: 100svh;
   min-height: 560px;

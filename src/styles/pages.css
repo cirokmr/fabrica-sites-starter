@@ -89,7 +89,7 @@
 .prose h2 { font-size: clamp(1.6rem, 2.4vw, 2.2rem); }
 .prose h3 { font-size: clamp(1.35rem, 2vw, 1.8rem); }
 .prose h4, .prose h5 { font-size: 1.25rem; }
-.prose a { color: var(--destaque); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.prose a { color: var(--acento, var(--destaque)); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
 .prose strong { font-weight: 650; }
 .prose ul, .prose ol { padding-left: 1.2em; }
 .prose li + li { margin-top: 0.4em; }
@@ -486,3 +486,14 @@
 .detail-aside:empty { display: none; }
 .detail-aside:empty + .prose { grid-column: 3 / span 8; }
 @media (max-width: 899px) { .detail-aside:empty + .prose { grid-column: 1 / -1; } }
+
+/* ---------- Prancha de direção de arte (/prancha/, página interna) ---------- */
+.prancha__cores { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; }
+.prancha__cor { display: grid; gap: 6px; }
+.prancha__amostra { display: block; aspect-ratio: 4 / 3; border: 1px solid var(--line); }
+.prancha__contrastes { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px 32px; margin: 48px 0 0; padding-top: 24px; border-top: 1px solid var(--line); }
+.prancha__contrastes dd { margin: 6px 0 0; font-size: 15px; }
+.prancha__tipos > p { margin: 0 0 18px; }
+.prancha__fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.prancha__foto { margin: 0; aspect-ratio: 4 / 5; }
+.prancha__notas { margin: 0; padding-left: 1.1em; display: grid; gap: 12px; max-width: 60ch; }

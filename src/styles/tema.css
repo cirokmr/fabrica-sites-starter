@@ -26,9 +26,18 @@
   --font-serif: 'Instrument Serif', 'Times New Roman', Georgia, serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
 
-  /* Largura do display (eixo wdth). 125 = expandida; 100 = normal. */
+  /* Cor de destaque para TEXTO sobre fundo claro (se --destaque não tiver contraste). */
+  /* --destaque-sobre-claro: #3d55d9; */
+
+  /* Duotone (quando site.json → fotos.tratamento = "duotone"): sombra e luz das fotos. */
+  --duo-sombra: var(--escuro);
+  --duo-luz: var(--claro);
+
+  /* Display: largura (eixo wdth, 125 = expandida, 100 = normal), peso e quanto
+     cada letra ocupa em "em" — usado para a palavra gigante caber na tela. */
   --display-largura: 125%;
   --display-peso: 860;
+  --display-em-por-letra: 0.94;
 
   --gutter: clamp(16px, 3.2vw, 48px);
   --max: 1680px;

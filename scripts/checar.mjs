@@ -80,7 +80,7 @@ const normalizar = (s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '
   .replace(/[^a-z0-9]+/g, ' ').trim();
 
 // ---------- 1-3: páginas ----------
-const paginas = listar(DIST, (p) => p.endsWith('.html') && !p.includes(`${path.sep}_next${path.sep}`) && !p.includes('_vazio'));
+const paginas = listar(DIST, (p) => p.endsWith('.html') && !p.includes(`${path.sep}_next${path.sep}`) && !p.includes('_vazio') && !p.includes(`${path.sep}prancha${path.sep}`));
 const titulos = new Map();
 let textoDoSiteNovo = '';
 

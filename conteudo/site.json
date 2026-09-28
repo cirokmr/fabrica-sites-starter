@@ -6,6 +6,7 @@
   "url": "https://www.exemplo.com.br",
   "descricao": "Estúdio Exemplo: frase de uma linha que diz o que a organização faz, para quem e onde.",
   "corTema": "#111214",
+  "fotos": { "tratamento": "natural" },
 
   "logo": null,
   "marca": null,

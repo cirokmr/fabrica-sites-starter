@@ -8,8 +8,12 @@ name: Qualidade
 
 on:
   push:
+    branches-ignore: [prints]
   pull_request:
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build-e-checagem:
@@ -25,6 +29,19 @@ jobs:
 
       - name: Instalar dependências
         run: npm ci --no-audit --no-fund || npm install --no-audit --no-fund
+
+      # Mudou alguma dependência (ex.: fontes novas do cliente) e o lock ficou velho
+      # ou foi apagado? O npm install acima gerou um novo: salva no repositório.
+      - name: Atualizar package-lock.json (automático)
+        if: github.event_name == 'push'
+        run: |
+          if [ -n "$(git status --porcelain package-lock.json)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add package-lock.json
+            git commit -qm "Atualiza package-lock.json (automático)"
+            git push -q || echo "não foi possível enviar o lock (outro envio no meio) — segue"
+          fi
 
       - name: Compilar o site
         run: |
