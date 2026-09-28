@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       url_nova:
-        description: "Endereço público do site novo, para medir no Lighthouse (vazio = usa o proposta.json ou mede a cópia local)"
+        description: "Endereço público do site novo para o Lighthouse (vazio = o do proposta.json; \"local\" = mede a cópia compilada aqui)"
         required: false
         default: ""
       lighthouse:
@@ -59,6 +59,7 @@ jobs:
           export CHROME_PATH="$(node -e "import('playwright').then(p => console.log(p.chromium.executablePath()))")"
           ANTIGA="$(node -e "try{console.log(require('./cliente.json').site_antigo||'')}catch{console.log('')}")"
           NOVA="${URL_NOVA:-$(node -e "try{console.log(require('./proposta.json').urlNova||'')}catch{console.log('')}")}"
+          if [ "$URL_NOVA" = "local" ]; then NOVA=""; fi   # "local" = medir a cópia compilada aqui
           # confere se o endereço é MESMO o site novo: o <title> publicado tem que ser igual ao
           # do site compilado aqui (nomes iguais existem — ex.: outra organização com a mesma sigla)
           titulo() { grep -o '<title>[^<]*</title>' | head -1; }
