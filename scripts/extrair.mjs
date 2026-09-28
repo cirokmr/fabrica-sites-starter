@@ -98,6 +98,19 @@ function nomeArquivoImagem(u, usados) {
 
 const yaml = (v) => JSON.stringify(v ?? '');
 
+// Endereço do arquivo original: WordPress (wp-content/uploads) e CDNs comuns servem
+// a imagem redimensionada via ?w=448 ou foto-448x336.jpg — tiramos isso.
+function urlOriginal(u) {
+  try {
+    const url = new URL(u);
+    if (/wp-content\/uploads|files\.wordpress\.com|wp\.com|\/uploads\//.test(url.href)) {
+      url.search = '';
+      url.pathname = url.pathname.replace(/-\d{2,4}x\d{2,4}(?=\.[a-z0-9]+$)/i, '').replace(/-scaled(?=\.[a-z0-9]+$)/i, '');
+    }
+    return url.href;
+  } catch { return u; }
+}
+
 // chave para detectar a mesma página com endereços diferentes
 function chave(u) {
   const url = new URL(u);
@@ -197,11 +210,29 @@ function coletarNaPagina() {
 
   // Imagens (inclui background-image de CSS)
   const imagens = [];
+  // Maior versão disponível de cada imagem: original do WordPress (data-orig-file),
+  // maior item do srcset, ou o link <a href="foto-grande.jpg"> em volta da miniatura.
+  const ehImagem = (u) => /\.(jpe?g|png|webp|gif|avif)(\?|$)/i.test(u || '');
+  const maiorVersao = (img) => {
+    const cands = [];
+    const add = (u, w) => { if (u && !u.startsWith('data:')) cands.push({ u: new URL(u, document.baseURI).href, w }); };
+    add(img.dataset.origFile, 1e6);
+    const link = img.closest('a');
+    if (link && ehImagem(link.getAttribute('href'))) add(link.getAttribute('href'), 5e5);
+    add(img.dataset.largeFile, 1e5);
+    for (const parte of (img.getAttribute('srcset') || '').split(',')) {
+      const [u, d] = parte.trim().split(/\s+/);
+      if (u) add(u, parseFloat(d) * (/x$/.test(d || '') ? 1000 : 1) || 0);
+    }
+    add(img.currentSrc || img.src, img.naturalWidth || 1);
+    cands.sort((a, b) => b.w - a.w);
+    return cands[0]?.u;
+  };
   for (const img of document.images) {
-    const src = img.currentSrc || img.src;
-    if (!src || src.startsWith('data:')) continue;
+    const src = maiorVersao(img);
+    if (!src) continue;
     if (img.naturalWidth && img.naturalWidth < 24) continue; // pixels de rastreamento
-    imagens.push({ src, alt: limpar(img.alt), largura: img.naturalWidth, altura: img.naturalHeight });
+    imagens.push({ src, miniatura: img.currentSrc || img.src, alt: limpar(img.alt), largura: img.naturalWidth, altura: img.naturalHeight });
   }
   for (const el of document.querySelectorAll('body *')) {
     const bg = getComputedStyle(el).backgroundImage;
@@ -467,10 +498,17 @@ async function main() {
   const nomesUsados = new Set();
   const listaImagens = [];
   for (const [src, info] of imagensGlobais) {
-    const item = { url_original: src, arquivo: null, alt: info.alt, fundo_css: !!info.fundo, largura: info.largura, altura: info.altura, paginas: [...info.paginas], e_logo: src === logo };
+    const item = { url_original: src, externa: !mesmoSite(src) && !/wp\.com|wordpress\.com|cloudfront|amazonaws|googleusercontent|wixstatic|squarespace/.test(src), arquivo: null, alt: info.alt, fundo_css: !!info.fundo, largura: info.largura, altura: info.altura, paginas: [...info.paginas], e_logo: src === logo };
     try {
-      const r = await contexto.request.get(src, { timeout: 20000 });
-      if (r.ok()) {
+      // tenta primeiro o arquivo original (sem o redimensionamento do WordPress/CDN)
+      let r = null;
+      for (const tentativa of [...new Set([urlOriginal(src), src, info.miniatura].filter(Boolean))]) {
+        try {
+          const resp = await contexto.request.get(tentativa, { timeout: 30000 });
+          if (resp.ok() && /image|octet-stream/.test(resp.headers()['content-type'] || '')) { r = resp; item.url_baixada = tentativa; break; }
+        } catch { /* tenta a próxima */ }
+      }
+      if (r) {
         const corpo = await r.body();
         if (corpo.length > 1500 || /\.svg/i.test(src)) {
           const nome = nomeArquivoImagem(src, nomesUsados);
