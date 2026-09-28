@@ -90,7 +90,8 @@
 .footer__word { padding-inline: var(--gutter); margin-top: clamp(30px, 5vw, 70px); }
 .footer__word .display {
   display: block;
-  font-size: min(19.6vw, 26rem);
+  /* cabe inteira na largura: ~0,94em por letra no display expandido */
+  font-size: min(calc(94vw / (var(--letras, 5) * 0.94)), 26rem);
   line-height: 0.78;
   letter-spacing: -0.05em;
   white-space: nowrap;

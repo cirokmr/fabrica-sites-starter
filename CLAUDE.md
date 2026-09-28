@@ -1,82 +1,96 @@
 # Fábrica de Sites — regras do projeto
 
-Este repositório é o **molde** (ou uma cópia dele para um cliente). O trabalho aqui é
-sempre o mesmo: pegar um site antigo e reconstruí-lo neste padrão moderno, rápido e
+Este repositório é o **molde** (ou uma cópia dele para um cliente). O trabalho é sempre
+o mesmo: pegar um site antigo e reconstruí-lo com **direção de arte própria**, no nível
+de acabamento do site do Tombô (tipografia editorial, movimento, transições), rápido e
 fácil de manter. Siga estas regras em toda sessão.
 
 ## Stack fixa (não trocar sem pedido explícito)
-- **Astro 5** (site estático) + **Tailwind CSS 4** (via `@tailwindcss/vite`)
-- Sem React/Vue/jQuery. JavaScript só quando for indispensável.
-- Node 20+. Comandos: `npm run dev`, `npm run build`, `npm run checar`.
+- **Next.js 16** com `output: 'export'` (site 100% estático, sai em `out/`)
+- **GSAP 3** (ScrollTrigger, ScrollSmoother, SplitText) — o "motor" em `src/lib/`
+- CSS puro com tokens (sem Tailwind). Fontes self-hosted via `@fontsource`.
+- React 19, TypeScript. Node 22 (`.node-version`).
 
 ## Onde fica cada coisa
 | O quê | Onde |
 |---|---|
-| Todo o texto e dados do cliente | `src/data/site.json` |
-| Cores e fontes da marca | bloco `@theme` em `src/styles/global.css` |
-| Componentes de seção (reutilizáveis) | `src/components/` |
-| Páginas | `src/pages/` (1 arquivo = 1 URL) |
-| Imagens otimizadas do site antigo | `extraido/imagens-web/` (WebP, geradas por `npm run imagens`) |
-| Imagens usadas no site novo | `public/imagens/` (copiadas de `extraido/imagens-web/`) |
+| Nome, contatos, menu, textos da home e do rodapé | `conteudo/site.json` |
+| Páginas institucionais (`/sobre/`, `/historia/`…) | `conteudo/paginas/<slug>.md` |
+| Coleção numerada (projetos/serviços/obras) | `conteudo/projetos/<slug>.md` |
+| Notícias / diário | `conteudo/noticias/<slug>.md` |
+| **Cores, fontes, proporções do cliente** | `src/styles/tema.css` (+ imports de fonte em `src/app/layout.tsx`) |
+| Motor de movimento (não mexer por cliente) | `src/lib/gsap.ts`, `motion.ts`, `useScene.ts`, `intro.ts` |
+| Seções da home | `src/components/secoes/` (ligadas por `site.json → home.secoes`) |
+| Base visual comum | `src/app/globals.css`, `src/styles/{components,home,pages}.css` |
+| Imagens do site | `public/img/…` (WebP, copiadas de `extraido/imagens-web/`) |
+| Direção de arte aprovada | `DIRECAO.md` (criado pela skill `/direcao-de-arte`) |
 | URLs antigas → novas | `redirects.json` |
 | Material do site antigo (só leitura) | `extraido/` |
 | Ficha/status do cliente | `cliente.json` |
 
-## Regras de conteúdo (as mais importantes)
-1. **Nunca invente conteúdo.** Todo texto, telefone, endereço, serviço, preço e depoimento
-   precisa existir em `extraido/`. Se algo necessário não existir, escreva em
-   `PENDENCIAS.md` e siga em frente — não preencha com texto genérico.
-2. **Pode melhorar a forma, não o sentido:** corrigir ortografia, quebrar parágrafos
-   longos, criar títulos de seção e chamadas curtas (CTA) é permitido. Mudar fatos, não.
-3. **Depoimentos só reais.** Se o site antigo não tem, a lista fica vazia (a seção some).
-4. **Português do Brasil**, tom do próprio cliente.
-5. Nenhum texto do molde pode sobrar ("Empresa Exemplo", "exemplo.com.br", "tirada do
-   site antigo"). O `npm run checar` acusa isso como erro.
+Formato dos `.md` e blocos especiais da prosa: `conteudo/LEIA-ME.md` e `docs/BLOCOS.md`.
 
-## Regras de código
-- **Reutilize os componentes existentes.** Crie um componente novo só se nenhum servir,
-  e aí deixe-o genérico (recebendo props), para entrar no molde depois.
-- Texto nunca fica "chumbado" no componente: vem de `site.json` via props.
-- Cores só pelos tokens (`bg-primaria`, `text-texto`...). Nada de hex solto nos componentes.
-- Toda `<img>` tem `alt` (descritivo; `alt=""` só para imagem decorativa), `width/height`
-  quando possível e `loading="lazy"` (menos a primeira imagem da página).
-- Cada página: um único `<h1>`, `titulo` e `descricao` próprios no `<Layout>`.
-- Imagens sempre em WebP (de `extraido/imagens-web/`); nenhuma acima de 300 KB.
-- Mobile first: confira sempre em 390px de largura.
+## Regras de conteúdo (as mais importantes)
+1. **Nunca invente conteúdo.** Todo fato (texto, telefone, endereço, serviço, preço,
+   data, nome de pessoa, depoimento) precisa existir em `extraido/`. Se faltar, anote em
+   `PENDENCIAS.md` e siga — não preencha com texto genérico.
+2. **Pode melhorar a forma, não o sentido:** títulos de seção, chamadas curtas, frases de
+   efeito da direção de arte (ex.: a pergunta do hero) podem ser escritas, desde que não
+   afirmem fatos novos. Corrigir ortografia e quebrar parágrafos é permitido.
+3. **Depoimentos só reais.** Sem depoimento no site antigo, não existe seção de depoimentos.
+4. **Português do Brasil**, tom do próprio cliente.
+5. **Direitos autorais:** não reproduza poemas, letras ou textos de terceiros que estavam
+   no site antigo; anote em `PENDENCIAS.md`.
+6. Nada do molde pode sobrar ("Exemplo", `exemplo.com.br`, `/img/exemplo/`). O
+   `npm run checar` acusa como erro num repositório de cliente.
+
+## Regras de design e código
+- **Cada cliente tem direção de arte própria** (conceito, paleta, fontes, seções
+  assinatura) definida em `DIRECAO.md` e aprovada pelo usuário ANTES de montar o site.
+  Nunca reutilize a identidade de outro cliente (nem a do Tombô).
+- Cores e fontes do cliente só em `tema.css`. Nos componentes, use as variáveis
+  (`var(--destaque)`…) e as classes de tema (`tema-escuro`, `tema-claro`, `tema-destaque`).
+- Reutilize as seções e o motor. Seção nova só se nenhuma servir — e aí genérica
+  (dados via props/JSON), para voltar ao molde depois.
+- Animação declarativa por atributos: `data-split`, `data-fade`, `data-stagger`,
+  `data-reveal="img"`, `data-parallax`, `data-magnetic`, `data-now` (ver `src/lib/motion.ts`).
+  Tudo precisa funcionar com "reduzir movimento" (o CSS já mostra estático).
+- Imagens: WebP, `alt` descritivo (vazio só se decorativa), ≤ 300 KB (exceto hero ≤ 500 KB).
+- Cada página: um único `<h1>`, título e descrição próprios (metadata do Next).
+- Contraste: texto `--claro` sobre `--escuro` e `--escuro` sobre `--destaque` ≥ 4.5:1.
+- Mobile first: confira os prints de celular sempre.
 
 ## SEO e migração (não pode falhar)
-- Toda URL em `extraido/urls-antigas.json` precisa ter destino: uma página nova com o
-  mesmo caminho **ou** uma entrada em `redirects.json`. URLs com `mesma_pagina_que`
-  (ex.: `/index.html`) também recebem redirect. Isso preserva o Google do cliente.
-- Preserve títulos e descrições antigos quando forem bons; melhore quando vazios/ruins.
-- `seo.url` em `site.json` = domínio final do cliente (com https e www, se usar).
-- Atualize `public/robots.txt` com o domínio certo.
+- Toda URL em `extraido/urls-antigas.json` precisa de destino: página nova **ou** entrada
+  em `redirects.json` (inclusive as `mesma_pagina_que`). Destinos com barra final (`/sobre/`).
+- Depois de mudar `redirects.json`: `node scripts/gerar-redirects.mjs` e commit de
+  `vercel.json` + `public/_redirects`.
+- `site.json → url` = domínio final do cliente (sitemap e robots saem daí).
 
 ## Fluxo padrão (skills)
 1. `/extrair URL` → captura o site antigo para `extraido/`
-2. `/reconstruir` → monta o site novo a partir de `extraido/`
-3. `/revisar` → controle de qualidade com o agente `revisor-qa`
-Atualize o campo `status` de `cliente.json` ao fim de cada etapa.
+2. `/direcao-de-arte` → propõe conceito, paleta, fontes e seções; **usuário aprova**
+3. `/reconstruir` → monta o site no molde, seguindo `DIRECAO.md`
+4. `/revisar` → build, checagem, prints e agente `revisor-qa`
+Atualize `cliente.json → status` ao fim de cada etapa.
 
 ## Trabalhando na nuvem (modo padrão)
-- O ambiente da nuvem é temporário: **ao fim de cada etapa, faça commit e push**.
-  Trabalho não enviado ao GitHub se perde.
-- A nuvem pode não ter acesso à internet nem ao npm. Não tente contornar o bloqueio:
-  - a **extração** do site antigo roda pelo GitHub Actions (workflow *Extrair site
-    antigo*, veja a skill `/extrair`);
-  - `extrair.mjs` e `otimizar-imagens.mjs` também funcionam sem `npm install`, usando o
-    Playwright e o sharp já instalados no ambiente, quando houver internet.
-- Sem `node_modules` não dá para rodar `npm run build`/`checar` aqui. Quem compila e
-  checa é o **GitHub Actions** (`.github/workflows/qualidade.yml`) e a **Vercel**, a cada
-  push. Nesse caso, revise o código com atenção redobrada antes do push e diga ao usuário
-  para conferir a aba *Actions* e o link de prévia.
-- Depois de mudar `redirects.json`, rode `node scripts/gerar-redirects.mjs` e inclua
-  `vercel.json` e `public/_redirects` no commit (a Vercel lê o `vercel.json` do repositório).
-- De `extraido/`, tudo vai para o Git menos `extraido/imagens/` (originais pesadas):
-  textos, JSONs, prints (`screenshots/*.jpg`) e imagens otimizadas (`imagens-web/`). `PLANO.md` e `PENDENCIAS.md` também vão no commit: são a
-  memória do projeto entre sessões.
+- O ambiente é temporário: **ao fim de cada etapa, commit e push**.
+- A nuvem pode não ter internet nem npm. Não tente contornar. Use o GitHub Actions:
+  - **Extrair site antigo** (`extrair.yml`) — extração com internet;
+  - **Qualidade** (`qualidade.yml`) — roda sozinho a cada push: build + `checar`.
+    Se falhar, o erro vira anotação legível pela API (`check-runs/<id>/annotations`);
+  - **Prints** (`prints.yml`) — compila e fotografa as páginas (desktop, celular, com e
+    sem animação) e salva no branch `prints`, pasta `prints/<branch>/`. É assim que você
+    VÊ o site: `git fetch origin prints` e abra os JPG com a ferramenta de leitura.
+  Dispare pela API (`POST .../actions/workflows/<arquivo>/dispatches`) e acompanhe em
+  `.../actions/workflows/<arquivo>/runs?branch=<branch>&per_page=1`.
+- Sem `node_modules` não há build local: revise o TypeScript com atenção redobrada
+  antes do push e confira o resultado do workflow **Qualidade**.
+- De `extraido/`, tudo vai para o Git menos `extraido/imagens/` (originais pesadas).
+  `DIRECAO.md`, `PLANO.md` e `PENDENCIAS.md` também vão: são a memória do projeto.
 
 ## Definição de pronto
-- Build sem erros (localmente, ou ✅ no GitHub Actions / *Ready* na Vercel)
-- `npm run checar` sem ERROS (avisos revisados e justificados em `PENDENCIAS.md`)
-- `PENDENCIAS.md` lista tudo que depende do cliente (fotos melhores, textos faltando etc.)
+- ✅ no workflow **Qualidade** (build + `checar` sem ERROS) e deploy *Ready* na Vercel
+- Prints revisados (desktop e celular) sem nada cortado, sobreposto ou ilegível
+- `PENDENCIAS.md` com tudo que depende do cliente

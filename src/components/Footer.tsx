@@ -107,7 +107,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="footer__word" aria-hidden="true">
+      <div className="footer__word" aria-hidden="true" style={{ '--letras': Math.max(3, [...rodape.palavra].length) } as React.CSSProperties}>
         <span className="display" data-split="chars">
           {rodape.palavra}
         </span>

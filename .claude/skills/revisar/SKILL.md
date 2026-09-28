@@ -1,32 +1,37 @@
 ---
 name: revisar
-description: Controle de qualidade do site reconstruído antes de mostrar ao cliente (build, checagem automática, revisão independente por agente, pendências). Use quando o usuário pedir para revisar, conferir, testar ou aprovar o site.
+description: Controle de qualidade do site reconstruído antes de mostrar ao cliente (workflow Qualidade, prints de desktop e celular, revisão independente pelo agente revisor-qa, pendências). Use quando o usuário pedir para revisar, conferir, testar ou aprovar o site.
 ---
 
 # /revisar — controle de qualidade
 
-## 1. Checagem automática
-1. `npm run build` — tem que passar sem erro.
-2. `npm run checar` — leia `relatorio-qa.md`.
-   *Sem `node_modules/` (nuvem sem npm):* peça ao usuário o resultado da última execução
-   na aba **Actions** do GitHub (o relatório aparece no resumo da execução) ou o erro da
-   Vercel, e trabalhe a partir dele.
-3. Corrija todos os **erros**. Para cada **aviso**, corrija ou justifique em `PENDENCIAS.md`.
+## 1. Automático
+1. Último workflow **Qualidade** do branch: tem que estar ✅. Leia a anotação
+   "Relatório de qualidade" (check-run annotations) — é o `relatorio-qa.md`.
+   (Com npm local: `npm run build && npm run checar`.)
+2. Corrija todos os **erros**. Para cada **aviso**, corrija ou justifique em `PENDENCIAS.md`.
 
-## 2. Revisão independente
-Chame o agente **revisor-qa** (ele não participou da construção, então enxerga o que
-passou batido). Passe para ele apenas: "Revise este site conforme suas instruções".
-Aplique as correções que ele apontar como **bloqueantes**; as demais, avalie.
+## 2. Visual
+Dispare o workflow **Prints**, baixe (`git fetch origin prints`) e confira com os olhos:
+- abertura e rolagens da home (o hero expande? a coleção corre na horizontal? nada
+  some ou fica por cima de outra coisa?);
+- **todas** as páginas no celular (texto cortado, palavra gigante saindo da tela,
+  botão fora do lugar);
+- contraste do texto sobre as fotos e sobre a cor de destaque.
 
-## 3. Checagens manuais sugeridas ao usuário
-Liste no final, para o humano fazer (não dá para automatizar 100%):
-- PageSpeed Insights (https://pagespeed.web.dev) no link de prévia — meta 90+ em tudo;
-- testar o formulário e o botão de WhatsApp no celular de verdade;
-- ler os textos da home em voz alta (se soar estranho, está estranho).
+## 3. Revisão independente
+Chame o agente **revisor-qa** (ele não participou da construção). Passe apenas:
+"Revise este site conforme suas instruções. Os prints estão em <pasta>."
+Aplique os **bloqueantes**; avalie as melhorias.
 
-## 4. Fechamento
-- Rode `npm run build && npm run checar` de novo até sair sem erros (ou confira o Actions).
-- Atualize `cliente.json → "status": "revisado"`.
-- `git add -A && git commit -m "Revisão de qualidade" && git push`
-- Entregue um resumo: status do QA, o que foi corrigido, pendências do cliente
-  (conteúdo de `PENDENCIAS.md`) e próximo passo (publicar a prévia e enviar ao cliente).
+## 4. Checagens para o humano (liste no final)
+- PageSpeed Insights (https://pagespeed.web.dev) no link de prévia — meta 90+;
+- abrir no celular de verdade: menu, WhatsApp, telefone, formulário (a 1ª mensagem do
+  Formsubmit pede ativação por e-mail);
+- ler os textos da home em voz alta.
+
+## 5. Fechamento
+- Tudo verde de novo depois das correções (Qualidade + Prints revisados).
+- `cliente.json → "status": "revisado"`, commit e push.
+- Resumo: status do QA, o que foi corrigido, pendências do cliente (`PENDENCIAS.md`),
+  próximo passo (mandar o link de prévia ao cliente).

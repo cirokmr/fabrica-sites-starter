@@ -52,7 +52,7 @@ URL recebida: $ARGUMENTS
    - quantas páginas, imagens e documentos;
    - problemas encontrados (páginas quebradas, texto vazio, logo não achado);
    - estrutura sugerida para o site novo (quais páginas manter, juntar ou virar seção da home);
-   - próximo passo: `/reconstruir`.
+   - próximo passo: `/direcao-de-arte` (a proposta visual, antes de construir).
 7. **Salve no GitHub** (se extraiu aqui ou mudou algo):
    `git add -A && git commit -m "Extração do site antigo" && git push`
    (só as imagens originais ficam fora do Git; textos, prints e imagens-web vão).
