@@ -1,0 +1,63 @@
+# BUSCAR FOTOS — fotos de licença livre (Wikimedia Commons) para o site do cliente.
+# Aba Actions → "Buscar fotos" → Run workflow (ou o Claude dispara pela API).
+# Resultado no branch "prints", pasta fotos/<branch>/ (folha.jpg + fotos + creditos.json).
+name: Buscar fotos
+
+on:
+  workflow_dispatch:
+    inputs:
+      termos:
+        description: "O que procurar, separado por ponto e vírgula (ex.: Presidente Getúlio; Vale do Itajaí)"
+        required: true
+      min_largura:
+        description: "Largura mínima da foto original (px)"
+        required: false
+        default: "1800"
+      max_por_termo:
+        description: "Máximo de fotos por termo"
+        required: false
+        default: "12"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: buscar-fotos-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  buscar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+
+      - name: Instalar sharp
+        run: npm install --no-save --no-audit --no-fund --no-package-lock sharp
+
+      - name: Buscar
+        env:
+          TERMOS: ${{ inputs.termos }}
+          MIN_LARGURA: ${{ inputs.min_largura }}
+          MAX_POR_TERMO: ${{ inputs.max_por_termo }}
+        run: |
+          node scripts/buscar-fotos.mjs
+          echo "::notice title=Fotos::$(node -e "const c=require('./fotos-candidatas/creditos.json');console.log(c.length+' foto(s): '+c.map(x=>x.n+') '+x.titulo+' ['+x.licenca+']').join(' | '))")"
+
+      - name: Salvar no branch "prints"
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          PASTA="fotos/$(echo "$BRANCH" | tr '/' '-')"
+          mkdir -p /tmp/fotos && cp -r fotos-candidatas/. /tmp/fotos/ && rm -rf fotos-candidatas
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin prints:prints 2>/dev/null || true
+          if git show-ref --quiet refs/heads/prints; then git checkout -f prints; else git checkout --orphan prints && git rm -rfq . ; fi
+          rm -rf "$PASTA" && mkdir -p "$PASTA" && cp -r /tmp/fotos/. "$PASTA/"
+          echo "Busca: ${{ inputs.termos }} — $(date -u +%FT%TZ)" > "$PASTA/LEIA.txt"
+          git add fotos && git commit -qm "Fotos candidatas ($BRANCH)" && git push -q origin prints

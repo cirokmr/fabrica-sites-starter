@@ -88,7 +88,8 @@ export type Site = {
   contatoPagina: { rotulo: string; titulo: Titulo; texto: string; descricao: string; campoMensagem: string };
   rodape: { rotulo: string; titulo: Titulo; texto: string; botao: string; palavra: string };
   naoEncontrada: { titulo: string; texto: string; botao: string };
-  fotos?: { tratamento: 'natural' | 'duotone' | 'misto' | 'pb' };
+  /** tratamento das fotos; hero: 'natural' deixa a foto do hero colorida em qualquer modo */
+  fotos?: { tratamento: 'natural' | 'duotone' | 'misto' | 'pb'; hero?: 'natural' | 'tratado' };
 };
 
 export const site = dados as unknown as Site;

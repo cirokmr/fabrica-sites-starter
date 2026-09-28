@@ -464,3 +464,8 @@ html.reduced .loader { display: none; }
 /* "próximo item": a foto de fundo continua escurecida para o título ficar legível */
 :is(.fotos-duotone, .fotos-misto) .next__media img { filter: grayscale(1) contrast(1.12) brightness(0.6); }
 .fotos-duotone .prose figure figcaption { position: relative; z-index: 2; background: var(--bg); padding-top: 10px; margin-top: 0; }
+/* fotos.hero = "natural": o hero fica colorido mesmo nos modos duotone/misto/pb
+   (use quando a foto do hero é boa e grande o bastante para a tela cheia) */
+.hero-natural .hero__media { background: none; isolation: auto; }
+.hero-natural .hero__media::after { content: none; }
+.hero-natural .hero__media .hero__frame { filter: none; mix-blend-mode: normal; }

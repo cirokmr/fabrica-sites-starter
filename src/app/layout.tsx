@@ -61,7 +61,7 @@ const schema = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const contagens: Record<string, number> = { '/projetos/': projetos.length, '/noticias/': noticias.length };
   return (
-    <html lang="pt-BR" className={`fotos-${site.fotos?.tratamento ?? 'natural'}`} suppressHydrationWarning>
+    <html lang="pt-BR" className={`fotos-${site.fotos?.tratamento ?? 'natural'}${site.fotos?.hero === 'natural' ? ' hero-natural' : ''}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: INIT + (site.intro.ativa ? '' : SEM_INTRO) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
