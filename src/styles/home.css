@@ -210,7 +210,7 @@ html.reduced .hero__caption { display: none; }
 .acard__media img, .acard__media video { width: 116%; max-width: none; margin-left: -8%; height: 100%; object-fit: cover; }
 .acard:hover .acard__inner { transform: scale(1.06); }
 .acard__title { font-size: clamp(1.8rem, 2.7vw, 3rem); margin: 6px 0 0; transition: color 0.3s; }
-.acard:hover .acard__title { color: var(--destaque); }
+.acard:hover .acard__title { color: var(--acento, var(--destaque)); }
 .acard__sub { margin: 0; font-size: 1.2rem; }
 .acard--all {
   aspect-ratio: 4 / 5;
@@ -312,7 +312,7 @@ html.reduced .hero__caption { display: none; }
 .ncard:hover .ncard__media img { transform: scale(1.05); }
 .ncard__meta { margin: 6px 0 0; padding-top: 12px; border-top: 1px solid var(--line); }
 .ncard__title { margin: 0; font-size: clamp(1.25rem, 1.6vw, 1.6rem); line-height: 1.2; font-weight: 600; letter-spacing: -0.015em; transition: color 0.3s; }
-.ncard:hover .ncard__title { color: var(--destaque); }
+.ncard:hover .ncard__title { color: var(--acento, var(--destaque)); }
 .ncard__excerpt { margin: 0; line-height: 1.5; }
 @media (max-width: 899px) {
   .ncards { grid-template-columns: 1fr; }

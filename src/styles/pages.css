@@ -26,7 +26,7 @@
   padding-block: clamp(30px, 4vw, 60px);
 }
 .year__label { display: flex; flex-direction: column; gap: 10px; }
-.year__label .display { color: var(--destaque); font-size: clamp(2.6rem, 4.6vw, 5rem); white-space: nowrap; }
+.year__label .display { color: var(--acento, var(--destaque)); font-size: clamp(2.6rem, 4.6vw, 5rem); white-space: nowrap; }
 @media (max-width: 899px) { .year { grid-template-columns: 1fr; } }
 
 /* ---------- Detalhe (projeto / notícia) ---------- */
@@ -273,7 +273,7 @@
 .cform textarea:focus + label,
 .cform textarea:not(:placeholder-shown) + label {
   transform: translateY(-26px) scale(0.55);
-  color: var(--destaque);
+  color: var(--acento, var(--destaque));
 }
 .cform__hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .cform__foot { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; }
@@ -285,7 +285,7 @@
 /* ---------- 404 ---------- */
 .notfound { min-height: 100svh; display: flex; align-items: center; padding-top: var(--nav-h); }
 .notfound__title { margin: 12px 0 8px; }
-.notfound__title .display { font-size: min(34vw, 30rem); color: var(--destaque); line-height: 0.8; }
+.notfound__title .display { font-size: min(34vw, 30rem); color: var(--acento, var(--destaque)); line-height: 0.8; }
 .notfound__links { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 36px; }
 
 /* ---------- Fichas de trabalhos (páginas escritas à mão, ex.: Arte e Sonho) ----------
@@ -316,7 +316,7 @@
   color: var(--muted);
   line-height: 1.5 !important;
 }
-.prose .work__meta span { color: var(--destaque); margin-right: 0.8em; }
+.prose .work__meta span { color: var(--acento, var(--destaque)); margin-right: 0.8em; }
 .prose .work__title {
   margin: 0;
   font-family: var(--font-serif);
@@ -364,7 +364,7 @@
   font-style: normal;
   font-size: 12px;
   letter-spacing: 0.08em;
-  color: var(--destaque);
+  color: var(--acento, var(--destaque));
   transform: translateY(-0.9em);
 }
 .prose .chapter + * { margin-top: 1.1em; }
@@ -406,7 +406,7 @@
   font-weight: 400;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--destaque);
+  color: var(--acento, var(--destaque));
 }
 .prose .steps ul { margin: 0; padding-left: 1.1em; font-size: 1rem; }
 

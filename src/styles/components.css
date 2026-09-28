@@ -25,7 +25,7 @@
 .hlist__sub { display: block; margin-top: 4px; font-size: 1.15rem; color: var(--muted); transition: transform 0.7s var(--ease-out); }
 .hlist__row:hover .hlist__title,
 .hlist__row:hover .hlist__sub { transform: translateX(16px); }
-.hlist__row:hover .hlist__title { color: var(--destaque); }
+.hlist__row:hover .hlist__title { color: var(--acento, var(--destaque)); }
 .hlist__meta { text-align: right; }
 .hlist__arrow { justify-self: end; font-size: 1.4rem; transition: transform 0.6s var(--ease-out); }
 .hlist__row:hover .hlist__arrow { transform: translateX(4px) rotate(-45deg); }
