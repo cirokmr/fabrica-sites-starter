@@ -30,6 +30,7 @@ Campos (todos opcionais; o script tem padrões):
   "destaques": ["3–5 frases curtas do que muda, cada uma verificável"],
   "proximosPassos": ["o que o cliente precisa mandar/decidir (do PENDENCIAS.md)"],
   "pares": [{ "antigo": "quem-somos", "novo": "/quem-somos/", "titulo": "Quem somos" }],
+  "notasPares": { "/": "1 frase do que mudou nesta tela", "celular": "…", "/quem-somos/": "…" },
   "mostrarNotas": true
 }
 ```
@@ -44,6 +45,8 @@ Campos (todos opcionais; o script tem padrões):
   ("Enviar fotos em alta resolução das feiras", "Confirmar o texto do manifesto").
 - **urlNova**: link de prévia da Vercel, se existir (é também onde o Lighthouse mede).
   Confira com `GET /repos/<o>/<r>/deployments?per_page=1` → `statuses` → `environment_url`.
+- **notasPares**: uma frase por comparação (chave = rota nova; `celular` = a do celular),
+  descrevendo só o que dá para ver nos dois prints. Olhe os prints antes de escrever.
 - **pares**: só se os padrões (home + até 3 páginas) não mostrarem o melhor. `antigo` =
   nome do print em `extraido/screenshots/` sem `.jpg`.
 

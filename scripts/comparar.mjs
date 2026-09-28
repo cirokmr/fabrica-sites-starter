@@ -84,7 +84,7 @@ function paresPadrao() {
 const pares = (proposta.pares?.length ? proposta.pares : paresPadrao()).map((p, i) => {
   const velho = urls.find((u) => u.arquivo && path.basename(u.arquivo, '.md') === p.antigo);
   const titulo = p.titulo || (p.novo === '/' ? 'Página inicial' : tituloNovo(p.novo) || semCaixaAlta(velho?.titulo?.split(/\s[|–]\s/)[0]) || p.novo);
-  return { ...p, titulo, n: String(i + 1).padStart(2, '0') };
+  return { ...p, titulo, nota: p.nota || proposta.notasPares?.[p.novo] || '', n: String(i + 1).padStart(2, '0') };
 });
 
 // ---------- servidor local do out/ (celular em alta e PDF) ----------
@@ -194,7 +194,7 @@ for (const p of pares) {
   if (fs.existsSync(antesCel)) {
     const depoisCel = await telaCelular(p.novo, path.join(TMP, `${nomePrint(p.novo)}-celular.jpg`));
     const titulo = `${p.titulo} no celular`;
-    imagens.push({ ...p, titulo, celular: true, arquivo: await painel({ antes: antesCel, depois: depoisCel, titulo, arquivo: `${base}-celular.jpg`, modo: 'celular' }) });
+    imagens.push({ ...p, titulo, nota: proposta.notasPares?.celular || '', celular: true, arquivo: await painel({ antes: antesCel, depois: depoisCel, titulo, arquivo: `${base}-celular.jpg`, modo: 'celular' }) });
   }
   console.log(`   ✓ ${p.titulo}`);
 }
@@ -220,6 +220,7 @@ const lh = (q) => {
     boasPraticas: nota('best-practices'),
     seo: nota('seo'),
     peso: j.audits?.['total-byte-weight']?.displayValue ?? null,
+    bytes: j.audits?.['total-byte-weight']?.numericValue ?? null,
     lcp: j.audits?.['largest-contentful-paint']?.displayValue ?? null,
     url: j.finalDisplayedUrl || j.finalUrl || j.requestedUrl || '',
   };
@@ -264,8 +265,10 @@ const passos = proposta.proximosPassos?.length ? proposta.proximosPassos : [];
 const notas = numeros.lighthouse;
 // notas só aparecem se os dois lados foram medidos na internet (a cópia local não vale como "depois")
 const mostrarNotas = proposta.mostrarNotas !== false && notas.antes && notas.depois && !/localhost|127\.0\.0\.1/.test(notas.depois.url);
+const mb = (b) => (b == null ? null : `${(b / 1048576).toLocaleString('pt-BR', { maximumFractionDigits: 1, minimumFractionDigits: 1 })} MB`);
 const linhaNota = (rotulo, a, d) => `<tr><td class="mono">${rotulo}</td><td>${a ?? '—'}</td><td class="accent">${d ?? '—'}</td></tr>`;
 
+const capaSite = fs.existsSync(path.join(PRINTS, 'home--abertura.jpg'));
 const pagina = (conteudo, tema = 'tema-escuro') => `<section class="pg ${tema}">${conteudo}</section>`;
 const html = `<!doctype html>
 <html lang="pt-BR" class="fotos-natural js reduced intro-seen">
@@ -282,6 +285,11 @@ ${css.map((h) => `<link rel="stylesheet" href="${h}" />`).join('\n')}
   .pg:last-child { page-break-after: auto; }
   .topo { display: flex; justify-content: space-between; gap: 10mm; margin-bottom: 8mm; }
   .capa { justify-content: space-between; }
+  .capa__meio { display: grid; grid-template-columns: 1fr 1.15fr; gap: 12mm; align-items: center; }
+  .capa__site { width: 100%; display: block; border: 1px solid var(--line); box-shadow: 0 6mm 14mm rgb(0 0 0 / 0.35); }
+  .comp__cab { display: flex; align-items: baseline; justify-content: space-between; gap: 10mm; margin: 0 0 5mm; }
+  .comp__cab h2 { margin: 0; font-size: 26pt; }
+  .comp__cab p { margin: 0; max-width: 120mm; font-size: 12pt; line-height: 1.35; text-align: right; }
   .capa h1 { margin: 0; font-size: 58pt; line-height: 0.9; }
   .capa .serif-i { font-size: 30pt; margin: 4mm 0 0; }
   .img { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
@@ -301,16 +309,20 @@ ${css.map((h) => `<link rel="stylesheet" href="${h}" />`).join('\n')}
 <body>
 ${pagina(`
   <div class="topo mono"><span>${esc(proposta.assinatura || '')}</span><span>${esc(data)}</span></div>
-  <div>
-    <p class="mono muted">${esc(proposta.rotulo || 'Novo site')}</p>
-    <h1 class="display">${esc(site.nome || cliente.cliente || '')}</h1>
-    <p class="serif-i accent">${esc(proposta.titulo || 'Antes e depois do novo site')}</p>
-    ${proposta.resumo ? `<p style="max-width:190mm;margin-top:8mm;font-size:15pt;line-height:1.35">${esc(proposta.resumo)}</p>` : ''}
+  <div class="capa__meio">
+    <div>
+      <p class="mono muted">${esc(proposta.rotulo || 'Novo site')}</p>
+      <h1 class="display">${esc(site.nome || cliente.cliente || '')}</h1>
+      <p class="serif-i accent">${esc(proposta.titulo || 'Antes e depois do novo site')}</p>
+      ${proposta.resumo ? `<p style="margin-top:8mm;font-size:13pt;line-height:1.4">${esc(proposta.resumo)}</p>` : ''}
+    </div>
+    ${capaSite ? '<img class="capa__site" src="/_proposta/capa-site.jpg" alt="" />' : ''}
   </div>
   <div class="rodape mono muted"><span>${esc(dominio(siteAntigo))} → ${esc(proposta.urlNova ? dominio(proposta.urlNova) : 'site novo')}</span><span>${esc(site.nomeCompleto || '')}</span></div>
 `, 'tema-escuro capa')}
 ${imagens.map((im) => pagina(`
-  <div class="topo mono"><span>${esc(im.n)} · ${esc(im.titulo)}</span><span class="muted">Antes → depois</span></div>
+  <div class="topo mono"><span>${esc(im.n)} · Antes → depois</span><span class="muted">${esc(site.nome || '')}</span></div>
+  <div class="comp__cab"><h2 class="display">${esc(im.titulo)}</h2>${im.nota ? `<p>${esc(im.nota)}</p>` : ''}</div>
   <div class="img"><img src="/_proposta/${esc(im.arquivo)}" alt="" /></div>
 `)).join('\n')}
 ${pagina(`
@@ -328,6 +340,7 @@ ${pagina(`
         ${linhaNota('Acessibilidade', notas.antes.acessibilidade, notas.depois.acessibilidade)}
         ${linhaNota('Boas práticas', notas.antes.boasPraticas, notas.depois.boasPraticas)}
         ${linhaNota('SEO', notas.antes.seo, notas.depois.seo)}
+        ${notas.antes.bytes && notas.depois.bytes ? linhaNota('Peso da página inicial', mb(notas.antes.bytes), mb(notas.depois.bytes)) : ''}
       </table>` : ''}
       <div class="numeros">
         <div><b>${numeros.paginasNovas}</b><span class="mono muted">páginas no site novo</span></div>
@@ -351,6 +364,7 @@ const pastaHtml = path.join(OUT, '_proposta');
 fs.mkdirSync(pastaHtml, { recursive: true });
 fs.writeFileSync(path.join(pastaHtml, 'index.html'), html);
 for (const im of imagens) fs.copyFileSync(path.join(DEST, im.arquivo), path.join(pastaHtml, im.arquivo));
+if (capaSite) fs.copyFileSync(path.join(PRINTS, 'home--abertura.jpg'), path.join(pastaHtml, 'capa-site.jpg'));
 
 const pg = await navegador.newPage({ viewport: { width: 1123, height: 794 } });
 await pg.goto('http://localhost:4175/_proposta/', { waitUntil: 'networkidle' });
