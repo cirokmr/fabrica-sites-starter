@@ -90,6 +90,8 @@ export type Site = {
   naoEncontrada: { titulo: string; texto: string; botao: string };
   /** tratamento das fotos; hero: 'natural' deixa a foto do hero colorida em qualquer modo */
   fotos?: { tratamento: 'natural' | 'duotone' | 'misto' | 'pb'; hero?: 'natural' | 'tratado' };
+  /** créditos de fotos de terceiros (licenças CC BY / CC BY-SA exigem), mostrados no rodapé */
+  creditos?: { texto: string; url?: string }[];
 };
 
 export const site = dados as unknown as Site;

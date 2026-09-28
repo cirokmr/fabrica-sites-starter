@@ -129,6 +129,21 @@ export default function Footer() {
         )}
         <BackToTop />
       </div>
+      {site.creditos && site.creditos.length > 0 && (
+        <p className="wrap footer__creditos mono muted">
+          {site.creditos.map((c, i) => (
+            <span key={i}>
+              {c.url ? (
+                <a className="u-link" href={c.url} target="_blank" rel="noopener noreferrer">
+                  {c.texto}
+                </a>
+              ) : (
+                c.texto
+              )}
+            </span>
+          ))}
+        </p>
+      )}
     </footer>
   );
 }
