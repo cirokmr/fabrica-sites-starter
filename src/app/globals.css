@@ -434,10 +434,11 @@ html.reduced .loader { display: none; }
   filter: grayscale(1) contrast(1.12);
 }
 .fotos-duotone :is(.media, .prose figure, .hero__media) {
-  position: relative;
   isolation: isolate;
   background: var(--duo-luz, var(--claro));
 }
+/* .hero__media já é absoluta (cobre a seção): só as outras viram referência do ::after */
+.fotos-duotone :is(.media, .prose figure) { position: relative; }
 .fotos-duotone :is(.media, .prose figure, .hero__media) img,
 .fotos-duotone .hero__frame { mix-blend-mode: multiply; }
 .fotos-duotone :is(.media, .prose figure, .hero__media)::after {

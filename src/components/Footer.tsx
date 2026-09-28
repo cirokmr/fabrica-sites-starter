@@ -86,7 +86,7 @@ export default function Footer() {
             <p className="mono muted">Onde</p>
             <ul>
               {contato.endereco && <li>{contato.endereco}</li>}
-              {local && <li>{local.cidade}</li>}
+              {local && !contato.endereco && <li>{local.cidade}</li>}
               {local?.pais && <li className="muted">{local.pais}</li>}
             </ul>
           </div>
@@ -94,7 +94,11 @@ export default function Footer() {
             <div>
               <p className="mono muted">Registro</p>
               <ul>
-                {projetos.length > 0 && <li>{String(projetos.length).padStart(2, '0')} projetos</li>}
+                {projetos.length > 0 && (
+                  <li>
+                    {String(projetos.length).padStart(2, '0')} {site.projetos.titulo.toLowerCase()}
+                  </li>
+                )}
                 {noticias.length > 0 && <li>{noticias.length} notícias</li>}
                 {periodo.de && (
                   <li className="muted">
