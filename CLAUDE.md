@@ -72,6 +72,7 @@ Formato dos `.md` e blocos especiais da prosa: `conteudo/LEIA-ME.md` e `docs/BLO
 2. `/direcao-de-arte` → propõe conceito, paleta, fontes e seções; **usuário aprova**
 3. `/reconstruir` → monta o site no molde, seguindo `DIRECAO.md`
 4. `/revisar` → build, checagem, prints e agente `revisor-qa`
+5. `/proposta` → antes × depois (imagens + PDF) para apresentar ao cliente
 Atualize `cliente.json → status` ao fim de cada etapa.
 
 ## Trabalhando na nuvem (modo padrão)
@@ -80,6 +81,8 @@ Atualize `cliente.json → status` ao fim de cada etapa.
   - **Extrair site antigo** (`extrair.yml`) — extração com internet;
   - **Qualidade** (`qualidade.yml`) — roda sozinho a cada push: build + `checar`.
     Se falhar, o erro vira anotação legível pela API (`check-runs/<id>/annotations`);
+  - **Proposta** (`proposta.yml`) — antes × depois, PDF e Lighthouse, salvos no branch
+    `prints`, pasta `proposta/<branch>/` (skill `/proposta`);
   - **Prints** (`prints.yml`) — compila e fotografa as páginas (desktop, celular, com e
     sem animação) e salva no branch `prints`, pasta `prints/<branch>/`. É assim que você
     VÊ o site: `git fetch origin prints` e abra os JPG com a ferramenta de leitura.

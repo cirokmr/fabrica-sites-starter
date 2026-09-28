@@ -1,0 +1,101 @@
+# PROPOSTA — material de entrega "antes × depois" para o cliente.
+# Aba Actions → "Proposta" → Run workflow (ou o Claude dispara pela API, skill /proposta).
+# Compila o site novo, fotografa, mede os dois sites no Google Lighthouse (opcional)
+# e monta as imagens lado a lado + apresentação em PDF. Resultado no branch "prints",
+# pasta proposta/<branch>/.
+name: Proposta
+
+on:
+  workflow_dispatch:
+    inputs:
+      url_nova:
+        description: "Endereço público do site novo, para medir no Lighthouse (vazio = usa o proposta.json ou mede a cópia local)"
+        required: false
+        default: ""
+      lighthouse:
+        description: "Medir os dois sites no Google Lighthouse"
+        type: boolean
+        required: false
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: proposta-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  proposta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+
+      - name: Instalar e compilar
+        run: |
+          npm ci --no-audit --no-fund || npm install --no-audit --no-fund
+          npm run build
+
+      - name: Instalar navegador e sharp
+        run: |
+          npm install --no-save --no-audit --no-fund --no-package-lock playwright sharp
+          npx playwright install --with-deps chromium
+
+      - name: Prints do site novo
+        run: node scripts/prints.mjs --max 14
+
+      - name: Medir no Lighthouse (antes e depois)
+        if: ${{ inputs.lighthouse }}
+        continue-on-error: true
+        env:
+          URL_NOVA: ${{ inputs.url_nova }}
+        run: |
+          mkdir -p proposta
+          export CHROME_PATH="$(node -e "import('playwright').then(p => console.log(p.chromium.executablePath()))")"
+          ANTIGA="$(node -e "try{console.log(require('./cliente.json').site_antigo||'')}catch{console.log('')}")"
+          NOVA="${URL_NOVA:-$(node -e "try{console.log(require('./proposta.json').urlNova||'')}catch{console.log('')}")}"
+          NOME="$(node -e "console.log(require('./conteudo/site.json').nome||'')")"
+          if [ -n "$NOVA" ] && ! curl -sfL --max-time 30 "$NOVA" | grep -qiF "$NOME"; then
+            echo "::warning::$NOVA não respondeu ou não parece ser o site de $NOME — medindo a cópia local (as notas não entram no PDF)"
+            NOVA=""
+          fi
+          if [ -z "$NOVA" ]; then
+            npx -y serve@14 out -l 4174 --no-clipboard >/dev/null 2>&1 &
+            sleep 4
+            NOVA="http://localhost:4174/"
+          fi
+          medir() {
+            npx -y lighthouse@12 "$1" --quiet --output=json --output-path="proposta/lighthouse-$2.json" \
+              --only-categories=performance,accessibility,best-practices,seo \
+              --chrome-flags="--headless=new --no-sandbox" || echo "::warning::Lighthouse não mediu $1"
+          }
+          if [ -n "$ANTIGA" ]; then medir "$ANTIGA" antes; fi
+          medir "$NOVA" depois
+          echo "::notice::Lighthouse medido: antes=$ANTIGA depois=$NOVA"
+
+      - name: Montar antes × depois e apresentação
+        run: node scripts/comparar.mjs
+
+      - name: Resumo
+        run: |
+          echo "::notice title=Proposta::$(ls proposta | tr '\n' ' ')"
+          echo "::notice title=Números::$(tr -d '\n' < proposta/numeros.json | tr -s ' ')"
+
+      - name: Salvar no branch "prints"
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          PASTA="proposta/$(echo "$BRANCH" | tr '/' '-')"
+          mkdir -p /tmp/proposta && cp -r proposta/. /tmp/proposta/ && rm -rf proposta prints
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin prints:prints 2>/dev/null || true
+          if git show-ref --quiet refs/heads/prints; then git checkout -f prints; else git checkout --orphan prints && git rm -rfq . ; fi
+          rm -rf "$PASTA" && mkdir -p "$PASTA" && cp -r /tmp/proposta/. "$PASTA/"
+          echo "Proposta de $BRANCH em $(date -u +%FT%TZ) — commit ${GITHUB_SHA::7}" > "$PASTA/LEIA.txt"
+          git add proposta && git commit -qm "Proposta de $BRANCH (${GITHUB_SHA::7})" && git push -q origin prints

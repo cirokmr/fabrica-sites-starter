@@ -13,3 +13,6 @@ relatorio-qa.md
 build.log
 .claude/.ultimo-build
 .claude/settings.local.json
+# Gerados pelos workflows (ficam no branch "prints")
+/prints/
+/proposta/

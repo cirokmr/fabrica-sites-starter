@@ -11,7 +11,8 @@
     "checar": "node scripts/checar.mjs",
     "redirects": "node scripts/gerar-redirects.mjs",
     "novo": "node scripts/novo-cliente.mjs",
-    "lote": "node scripts/lote.mjs"
+    "lote": "node scripts/lote.mjs",
+    "proposta": "node scripts/comparar.mjs"
   },
   "dependencies": {
     "@fontsource-variable/archivo": "^5.3.0",
