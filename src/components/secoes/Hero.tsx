@@ -46,8 +46,8 @@ export default function Hero({ dados }: { dados: SecaoHero }) {
       .from(q('.hero__row > *'), { autoAlpha: 0, y: 12, duration: 1, stagger: 0.06 }, 0.8);
     if (question) intro.from(question.words, { yPercent: 135, duration: 1.2, stagger: 0.05 }, 0.6);
     frames.forEach((f, i) => {
-      intro.set(f, { autoAlpha: 1 }, 0.25 + i * 0.2);
-      if (i > 0) intro.set(frames[i - 1], { autoAlpha: 0 }, 0.25 + i * 0.2 + 0.01);
+      intro.set(f, { autoAlpha: 1 }, 0.2 + i * 0.16);
+      if (i > 0) intro.set(frames[i - 1], { autoAlpha: 0 }, 0.2 + i * 0.16 + 0.01);
     });
 
     // --- rolagem presa: o círculo vira tela cheia ---

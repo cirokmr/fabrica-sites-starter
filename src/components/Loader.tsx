@@ -6,7 +6,7 @@ import { introPending, markIntroDone } from '@/lib/intro';
 
 type Props = { esquerda: string; direita: string; rotulo: string };
 
-// Abertura da primeira visita da sessão: contador 000→100 e duas lâminas
+// Abertura da primeira visita da sessão (~1,4 s): contador 000→100 e duas lâminas
 // (escura e destaque) que sobem revelando o site. Textos em site.json → "intro".
 export default function Loader({ esquerda, direita, rotulo }: Props) {
   const ref = useRef<HTMLDivElement>(null);
@@ -35,12 +35,12 @@ export default function Loader({ esquerda, direita, rotulo }: Props) {
             setGone(true);
           },
         })
-        .from('.loader__row--topo', { autoAlpha: 0, y: 20, duration: 0.8, ease: 'power3.out' }, 0)
+        .from('.loader__row--topo', { autoAlpha: 0, y: 20, duration: 0.6, ease: 'power3.out' }, 0)
         .to(
           counter,
           {
             v: 100,
-            duration: 1.6,
+            duration: 0.9,
             ease: 'power3.inOut',
             onUpdate: () => {
               const txt = String(Math.round(counter.v)).padStart(3, '0');
@@ -50,10 +50,10 @@ export default function Loader({ esquerda, direita, rotulo }: Props) {
           },
           0.1,
         )
-        .to('.loader__bar i', { scaleX: 1, duration: 1.6, ease: 'power3.inOut' }, 0.1)
-        .to('.loader__panel--escuro', { yPercent: -100, duration: 1.1, ease: 'expo.inOut' }, '+=0.05')
-        .to('.loader__panel--destaque', { yPercent: -100, duration: 1.1, ease: 'expo.inOut' }, '<0.12')
-        .call(markIntroDone, [], '<0.35');
+        .to('.loader__bar i', { scaleX: 1, duration: 0.9, ease: 'power3.inOut' }, 0.1)
+        .to('.loader__panel--escuro', { yPercent: -100, duration: 0.85, ease: 'expo.inOut' })
+        .to('.loader__panel--destaque', { yPercent: -100, duration: 0.85, ease: 'expo.inOut' }, '<0.1')
+        .call(markIntroDone, [], '<0.25');
     },
     { scope: ref },
   );
