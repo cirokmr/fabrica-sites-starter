@@ -59,10 +59,16 @@ jobs:
           export CHROME_PATH="$(node -e "import('playwright').then(p => console.log(p.chromium.executablePath()))")"
           ANTIGA="$(node -e "try{console.log(require('./cliente.json').site_antigo||'')}catch{console.log('')}")"
           NOVA="${URL_NOVA:-$(node -e "try{console.log(require('./proposta.json').urlNova||'')}catch{console.log('')}")}"
-          NOME="$(node -e "console.log(require('./conteudo/site.json').nome||'')")"
-          if [ -n "$NOVA" ] && ! curl -sfL --max-time 30 "$NOVA" | grep -qiF "$NOME"; then
-            echo "::warning::$NOVA não respondeu ou não parece ser o site de $NOME — medindo a cópia local (as notas não entram no PDF)"
-            NOVA=""
+          # confere se o endereço é MESMO o site novo: o <title> publicado tem que ser igual ao
+          # do site compilado aqui (nomes iguais existem — ex.: outra organização com a mesma sigla)
+          titulo() { grep -o '<title>[^<]*</title>' | head -1; }
+          LOCAL="$(titulo < out/index.html)"
+          if [ -n "$NOVA" ]; then
+            REMOTO="$(curl -sfL --max-time 30 "$NOVA" | titulo || true)"
+            if [ -z "$REMOTO" ] || [ "$REMOTO" != "$LOCAL" ]; then
+              echo "::warning::$NOVA não é o site novo (título lá: '$REMOTO'; aqui: '$LOCAL') — medindo a cópia local, e as notas NÃO entram no PDF"
+              NOVA=""
+            fi
           fi
           if [ -z "$NOVA" ]; then
             npx -y serve@14 out -l 4174 --no-clipboard >/dev/null 2>&1 &

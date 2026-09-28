@@ -43,8 +43,12 @@ Campos (todos opcionais; o script tem padrões):
   antigos redirecionados". Nada de "aumenta suas vendas", "melhor posição no Google".
 - **proximosPassos**: do `PENDENCIAS.md`, reescrito como pedido ao cliente
   ("Enviar fotos em alta resolução das feiras", "Confirmar o texto do manifesto").
-- **urlNova**: link de prévia da Vercel, se existir (é também onde o Lighthouse mede).
-  Confira com `GET /repos/<o>/<r>/deployments?per_page=1` → `statuses` → `environment_url`.
+- **urlNova**: link de prévia da Vercel. **Nunca adivinhe** pelo nome do projeto: se o
+  nome `<projeto>.vercel.app` já era de outra pessoa, a Vercel usa outro (ex.:
+  `site-cemear-eight.vercel.app`) — e o nome "certo" pode ser o site de outra organização
+  com a mesma sigla. Pegue o link com o usuário (ou no painel da Vercel) e confira com
+  WebFetch que é o site novo. O workflow também confere o `<title>` antes de medir.
+  Anote o link em `site.json → url` se ainda não houver domínio.
 - **notasPares**: uma frase por comparação (chave = rota nova; `celular` = a do celular),
   descrevendo só o que dá para ver nos dois prints. Olhe os prints antes de escrever.
 - **pares**: só se os padrões (home + até 3 páginas) não mostrarem o melhor. `antigo` =
