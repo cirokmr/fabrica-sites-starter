@@ -303,7 +303,7 @@ ${css.map((h) => `<link rel="stylesheet" href="${h}" />`).join('\n')}
   td:not(:first-child) { text-align: right; font-weight: 600; }
   .numeros { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6mm; margin-top: 8mm; }
   .numeros b { display: block; font-size: 34pt; line-height: 1; font-family: var(--font-sans); }
-  .rodape { margin-top: auto; display: flex; justify-content: space-between; padding-top: 5mm; }
+  .rodape { margin-top: auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 3mm 12mm; padding-top: 5mm; }
 </style>
 </head>
 <body>
