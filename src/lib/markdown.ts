@@ -8,6 +8,9 @@ export type Documento = { dados: Record<string, unknown>; html: string; texto: s
 
 const escapar = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const escaparAttr = (s: string) => escapar(s).replace(/"/g, '&quot;');
+/** Atributo de um trecho que JÁ passou por `escapar` (no `inline`): só faltam as aspas.
+ *  Usar `escaparAttr` ali escaparia o "&" duas vezes (`?a=1&amp;amp;b=2` quebra o link). */
+const aspasAttr = (s: string) => s.replace(/"/g, '&quot;');
 
 /** Links aceitos no Markdown: http(s), caminho do site (/…), âncora (#…), mailto: e tel:. */
 const HREF_SEGURO = /^(?:https?:|mailto:|tel:|\/|#)/i;
@@ -22,14 +25,14 @@ function inline(texto: string): string {
   });
   // imagens: ![alt](src "legenda")
   s = s.replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+&quot;([^&]*)&quot;|\s+"([^"]*)")?\)/g, (_m, alt, src) =>
-    `<img src="${escaparAttr(src)}" alt="${escaparAttr(alt)}" loading="lazy" decoding="async" />`,
+    `<img src="${aspasAttr(src)}" alt="${aspasAttr(alt)}" loading="lazy" decoding="async" />`,
   );
   // links: [texto](url) — só endereços seguros (http/https, caminho do site, âncora,
   // e-mail, telefone); qualquer outro esquema (javascript:, data:…) vira só o texto
   s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_m, txt, href) => {
     if (!HREF_SEGURO.test(href)) return txt;
     const externo = /^https?:\/\//.test(href);
-    return `<a href="${escaparAttr(href)}"${externo ? ' target="_blank" rel="noopener noreferrer"' : ''}>${txt}</a>`;
+    return `<a href="${aspasAttr(href)}"${externo ? ' target="_blank" rel="noopener noreferrer"' : ''}>${txt}</a>`;
   });
   s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
   s = s.replace(/(^|[^*])\*([^*\s][^*]*)\*/g, '$1<em>$2</em>');
