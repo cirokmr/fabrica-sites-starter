@@ -9,19 +9,25 @@ export type Documento = { dados: Record<string, unknown>; html: string; texto: s
 const escapar = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const escaparAttr = (s: string) => escapar(s).replace(/"/g, '&quot;');
 
+/** Links aceitos no Markdown: http(s), caminho do site (/…), âncora (#…), mailto: e tel:. */
+const HREF_SEGURO = /^(?:https?:|mailto:|tel:|\/|#)/i;
+
 function inline(texto: string): string {
   // trechos de código `assim` são protegidos das outras regras
   const codigos: string[] = [];
   let s = escapar(texto).replace(/`([^`]+)`/g, (_m, c: string) => {
-    codigos.push(`<code>${c}</code>`);
+    // aspas escapadas: o código pode acabar dentro de um atributo (alt/src/href)
+    codigos.push(`<code>${c.replace(/"/g, "&quot;").replace(/'/g, "&#39;")}</code>`);
     return `\u0000${codigos.length - 1}\u0000`;
   });
   // imagens: ![alt](src "legenda")
   s = s.replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+&quot;([^&]*)&quot;|\s+"([^"]*)")?\)/g, (_m, alt, src) =>
     `<img src="${escaparAttr(src)}" alt="${escaparAttr(alt)}" loading="lazy" decoding="async" />`,
   );
-  // links: [texto](url)
+  // links: [texto](url) — só endereços seguros (http/https, caminho do site, âncora,
+  // e-mail, telefone); qualquer outro esquema (javascript:, data:…) vira só o texto
   s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_m, txt, href) => {
+    if (!HREF_SEGURO.test(href)) return txt;
     const externo = /^https?:\/\//.test(href);
     return `<a href="${escaparAttr(href)}"${externo ? ' target="_blank" rel="noopener noreferrer"' : ''}>${txt}</a>`;
   });

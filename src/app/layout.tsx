@@ -64,7 +64,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="pt-BR" className={`fotos-${site.fotos?.tratamento ?? 'natural'}${site.fotos?.hero === 'natural' ? ' hero-natural' : ''}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: INIT + (site.intro.ativa ? '' : SEM_INTRO) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+        {/* "<" escapado: um texto com "</script>" no site.json não fecha a tag antes da hora */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }} />
       </head>
       <body>
         <SmootherInit />
