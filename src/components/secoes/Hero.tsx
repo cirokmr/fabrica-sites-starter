@@ -10,7 +10,7 @@ import type { SecaoHero } from '@/lib/site';
 // se expande até a tela cheia, revelando a legenda. A última foto é a final.
 export default function Hero({ dados }: { dados: SecaoHero }) {
   const ref = useRef<HTMLElement>(null);
-  const { palavra, pergunta, legenda, topo = [], base, imagens } = dados;
+  const { palavra, nomeH1, pergunta, legenda, topo = [], base, imagens } = dados;
 
   useScene(() => {
     const root = ref.current!;
@@ -25,7 +25,8 @@ export default function Hero({ dados }: { dados: SecaoHero }) {
       return;
     }
 
-    const word = SplitText.create(q('.hero__word')[0], { type: 'chars', mask: 'chars', charsClass: 'sc' });
+    // com nomeH1, a palavra fica num <span> próprio (o nome completo é só para leitores de tela)
+    const word = SplitText.create(q('.hero__word-txt')[0] ?? q('.hero__word')[0], { type: 'chars', mask: 'chars', charsClass: 'sc' });
     const qEl = q('.hero__q')[0];
     const question = qEl ? SplitText.create(qEl, { type: 'words', mask: 'words', wordsClass: 'sw' }) : null;
     const caption = SplitText.create(q('.hero__caption')[0], { type: 'lines', mask: 'lines', linesClass: 'sl' });
@@ -100,9 +101,29 @@ export default function Hero({ dados }: { dados: SecaoHero }) {
         </div>
       )}
 
-      {pergunta && <p className="hero__q serif-i">{pergunta}</p>}
+      {pergunta && (
+        <p className="hero__q serif-i">
+          {/* aspas angulares « » saem na cor de destaque */}
+          {pergunta.split(/([«»])/).map((parte, i) =>
+            parte === '«' || parte === '»' ? (
+              <span key={i} className="accent">
+                {parte}
+              </span>
+            ) : (
+              parte
+            ),
+          )}
+        </p>
+      )}
 
-      <h1 className="hero__word display">{palavra}</h1>
+      {nomeH1 && nomeH1 !== palavra ? (
+        <h1 className="hero__word display">
+          <span className="sr-only">{nomeH1} — </span>
+          <span className="hero__word-txt">{palavra}</span>
+        </h1>
+      ) : (
+        <h1 className="hero__word display">{palavra}</h1>
+      )}
 
       <p className="hero__caption">
         <span className="display">{legenda.display}</span> {legenda.serif && <span className="serif-i">{legenda.serif}</span>}

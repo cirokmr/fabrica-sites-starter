@@ -4,7 +4,7 @@ import type { SecaoTexto } from '@/lib/site';
 // Bloco simples de título + texto + botão (chamada, missão, aviso).
 export default function Texto({ dados }: { dados: SecaoTexto }) {
   return (
-    <section className="section tema-escuro secao-texto">
+    <section className={`section tema-${dados.tema ?? 'escuro'} secao-texto`}>
       <div className="wrap secao-texto__inner">
         {dados.rotulo && <p className="mono eyebrow muted">{dados.rotulo}</p>}
         <h2 className="secao-texto__title">

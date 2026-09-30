@@ -37,7 +37,7 @@ export default function Colagem({ dados }: { dados: SecaoColagem }) {
   const velocidades = [0.9, 0.35, 0.6, 1.15, 0.5];
 
   return (
-    <section className="collage tema-destaque" ref={ref} aria-labelledby="colagem-title">
+    <section className={`collage tema-${dados.tema ?? 'destaque'}`} ref={ref} aria-labelledby="colagem-title">
       {pecas.map((p, i) => (
         <figure key={p.src + i} className={`collage__piece media p${i + 1}`} data-speed={p.velocidade ?? velocidades[i]}>
           {/* eslint-disable-next-line @next/next/no-img-element */}

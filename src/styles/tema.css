@@ -39,6 +39,17 @@
   --display-peso: 860;
   --display-em-por-letra: 0.94;
 
+  /* Display com outra família ou em caixa baixa (opcional; os valores comentados são os
+     padrões). Ex.: títulos numa serifa leve em caixa baixa → --font-display com a serifa,
+     --display-caixa: none, --display-peso ~360, --display-largura: 100% (fonte sem eixo
+     wdth) e --display-em-por-letra menor (~0.56), senão a palavra gigante fica pequena. */
+  /* --font-display: var(--font-sans); */
+  /* --display-caixa: uppercase; */
+  /* --display-espaco: -0.035em; */
+  /* --display-entrelinha: 0.86; */
+  /* --cond-largura: 72%;   título condensado (.display-cond): largura e peso */
+  /* --cond-peso: 800; */
+
   --gutter: clamp(16px, 3.2vw, 48px);
   --max: 1680px;
   --nav-h: 76px;

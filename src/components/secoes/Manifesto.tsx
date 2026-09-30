@@ -9,7 +9,7 @@ import type { SecaoManifesto } from '@/lib/site';
 // "acende" palavra a palavra; no celular acende sem prender.
 export default function Manifesto({ dados }: { dados: SecaoManifesto }) {
   const ref = useRef<HTMLElement>(null);
-  const { rotulo, titulo, texto, figura } = dados;
+  const { rotulo, titulo, texto, figura, icones } = dados;
 
   useScene(() => {
     if (reducedMotion()) return;
@@ -41,7 +41,7 @@ export default function Manifesto({ dados }: { dados: SecaoManifesto }) {
   }, ref);
 
   return (
-    <section className="manifesto tema-claro" ref={ref} aria-labelledby="manifesto-title">
+    <section className={`manifesto tema-${dados.tema ?? 'claro'}`} ref={ref} aria-labelledby="manifesto-title">
       <div className={`wrap manifesto__grid${figura ? '' : ' manifesto__grid--sem-figura'}`}>
         <div className="manifesto__head">
           {rotulo && <p className="mono eyebrow">{rotulo}</p>}
@@ -73,6 +73,11 @@ export default function Manifesto({ dados }: { dados: SecaoManifesto }) {
             </div>
             {figura.legenda && <figcaption className="mono muted">{figura.legenda}</figcaption>}
           </figure>
+        )}
+
+        {icones && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img className="manifesto__icons" src={icones.src} alt={icones.alt} loading="lazy" data-fade />
         )}
       </div>
     </section>
