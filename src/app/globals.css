@@ -71,20 +71,23 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .skip-link:focus { left: 8px; }
 
 /* ---------- tipografia ---------- */
+/* Display: por padrão a mesma família do texto, em caixa-alta. O tema do cliente pode
+   trocar a família (--font-display), a caixa (--display-caixa: none p/ caixa baixa),
+   o espaçamento (--display-espaco) e a entrelinha (--display-entrelinha). */
 .display {
-  font-family: var(--font-sans);
+  font-family: var(--font-display, var(--font-sans));
   font-stretch: var(--display-largura, 125%);
   font-weight: var(--display-peso, 860);
-  text-transform: uppercase;
-  letter-spacing: -0.035em;
-  line-height: 0.86;
+  text-transform: var(--display-caixa, uppercase);
+  letter-spacing: var(--display-espaco, -0.035em);
+  line-height: var(--display-entrelinha, 0.86);
   margin: 0;
 }
 .display-cond {
-  font-family: var(--font-sans);
-  font-stretch: 72%;
-  font-weight: 800;
-  text-transform: uppercase;
+  font-family: var(--font-display, var(--font-sans));
+  font-stretch: var(--cond-largura, 72%);
+  font-weight: var(--cond-peso, 800);
+  text-transform: var(--display-caixa, uppercase);
   letter-spacing: -0.01em;
   word-spacing: 0.12em;
   line-height: 0.9;
@@ -240,10 +243,10 @@ html.js:not(.reduced) [data-reveal='img'] { clip-path: inset(100% 0 0 0); }
 .nav.is-hidden { transform: translateY(-110%); }
 .nav__logo img { height: 26px; width: auto; }
 .nav__nome {
-  font-family: var(--font-sans);
+  font-family: var(--font-display, var(--font-sans));
   font-stretch: var(--display-largura, 125%);
   font-weight: var(--display-peso, 860);
-  text-transform: uppercase;
+  text-transform: var(--display-caixa, uppercase);
   letter-spacing: -0.02em;
   font-size: 20px;
 }
@@ -332,7 +335,7 @@ html.js:not(.reduced) [data-reveal='img'] { clip-path: inset(100% 0 0 0); }
 }
 .loader__row { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; }
 .loader__count {
-  font-family: var(--font-sans);
+  font-family: var(--font-display, var(--font-sans));
   font-stretch: var(--display-largura, 125%);
   font-weight: var(--display-peso, 860);
   font-size: clamp(5rem, 22vw, 20rem);

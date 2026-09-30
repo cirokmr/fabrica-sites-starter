@@ -29,7 +29,8 @@ nem de outro cliente.
 3. **Paleta** — `--escuro`, `--claro`, `--destaque`, `--apoio` com hex, de onde veio cada
    cor (logo, fotos, site antigo) e as razões de contraste calculadas
    (claro/escuro e escuro/destaque ≥ 4.5:1 — calcule de verdade).
-4. **Tipografia** — display (títulos em caixa-alta), serif itálica (acentos), mono
+4. **Tipografia** — display (títulos; caixa-alta por padrão, ou caixa baixa com
+   `--display-caixa: none` e outra família em `--font-display`), serif itálica (acentos), mono
    (metadados). Só fontes do `@fontsource` (Google Fonts self-hosted). Diga o pacote npm
    de cada uma e se o display tem eixo de largura (`wdth`) — senão `--display-largura: 100%`.
    Display em fonte **variável** (quase todas do `@fontsource-variable`): na seção `faixa`
@@ -37,8 +38,9 @@ nem de outro cliente.
    Evite o trio do Tombô (Archivo expandida + Instrument Serif + IBM Plex Mono) a menos
    que o usuário peça.
 5. **Home, seção a seção** — quais seções do molde (`hero`, `manifesto`, `faixa`,
-   `colecao`, `colagem`, `destaques`, `texto`), em que ordem, com que conteúdo/fotos,
-   e qual tema (escuro/claro/destaque) cada uma usa. Se precisar de uma seção nova,
+   `colecao`, `colagem`, `destaques`, `texto`, `marcos` = linha do tempo com anos), em que
+   ordem, com que conteúdo/fotos, e qual tema (escuro/claro/destaque) cada uma usa — o
+   `tema` de cada seção é configurável no `site.json`. Se precisar de uma seção nova,
    descreva-a (ela será criada genérica e depois volta para o molde).
 6. **Mapa do site** — páginas novas × páginas antigas, e o que vira redirect.
 7. **Fotos** — quais usar onde (nomes de arquivo em `extraido/imagens-web/`), quais

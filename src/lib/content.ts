@@ -6,6 +6,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { lerDocumento } from './markdown';
+import { site } from './site';
 
 const RAIZ = path.join(process.cwd(), 'conteudo');
 
@@ -71,7 +72,11 @@ export type Noticia = {
   html: string;
 };
 
-const fmtData = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' });
+// site.json → noticias.formatoData: "curto" (08 mai 2026, padrão) ou "longo" (8 de maio de 2026)
+const fmtData =
+  site.noticias.formatoData === 'longo'
+    ? new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
+    : new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' });
 
 export const noticias: Noticia[] = lerPasta('noticias')
   .map(({ slug, dados, html, texto }) => {
@@ -118,6 +123,12 @@ export const paginas: Pagina[] = lerPasta('paginas')
   }))
   .sort((a, b) => a.ordem - b.ordem);
 
+/** Texto para a meta description: até ~155 caracteres, cortado no fim de uma palavra. */
+export const descricaoCurta = (texto: string, max = 155) => {
+  const t = texto.replace(/\s+/g, ' ').trim();
+  return t.length <= max ? t : t.slice(0, max - 1).replace(/[\s,;:.—–-]+\S*$/, '') + '…';
+};
+
 export const getProjeto = (slug: string) => projetos.find((p) => p.slug === slug);
 export const getNoticia = (slug: string) => noticias.find((n) => n.slug === slug);
 export const getPagina = (slug: string) => paginas.find((p) => p.slug === slug);
@@ -141,6 +152,12 @@ export const periodo = {
   de: noticias[noticias.length - 1]?.ano ?? '',
   ate: noticias[0]?.ano ?? '',
 };
+
+/** Troca {de} e {ate} pelo 1º e pelo último ano das notícias (textos do site.json). */
+export const preencher = (texto: string) => texto.replace(/\{de\}/g, periodo.de).replace(/\{ate\}/g, periodo.ate);
+
+/** Quantas imagens um HTML de conteúdo tem (ficha lateral dos projetos). */
+export const contarImagens = (html: string) => (html.match(/<img\b/gi) || []).length;
 
 /**
  * Para rotas dinâmicas com export estático: se a lista estiver vazia, o Next

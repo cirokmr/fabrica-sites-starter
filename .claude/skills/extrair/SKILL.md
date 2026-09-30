@@ -57,6 +57,31 @@ URL recebida: $ARGUMENTS
    `git add -A && git commit -m "Extração do site antigo" && git push`
    (só as imagens originais ficam fora do Git; textos, prints e imagens-web vão).
 
+## Arquivos avulsos (PDFs, capas originais, miniaturas de vídeo)
+A extração não baixa tudo: PDFs de publicações, a imagem original de uma capa, a
+miniatura de um vídeo. Monte uma lista JSON (ex.: `extraido/baixar.json`) e rode o mesmo
+workflow com o campo **`lista`** (a `url` pode ficar vazia — aí ele só baixa a lista):
+```json
+[
+  { "url": "https://site/arquivo.pdf", "destino": "public/arquivos/arquivo.pdf" },
+  { "url": "https://site/foto.jpg", "destino": "public/img/noticias/foto.webp", "largura": 1600, "maxKB": 300 },
+  { "url": "https://site/original.jpg", "alternativa": "https://site/original-1024x768.jpg", "destino": "public/img/capa.webp" }
+]
+```
+```bash
+curl -sS -X POST -H "Accept: application/vnd.github+json" -H "Content-Type: application/json" \
+  https://api.github.com/repos/<dono>/<repo>/actions/workflows/extrair.yml/dispatches \
+  -d '{"ref":"<branch>","inputs":{"url":"","lista":"extraido/baixar.json"}}' -w "%{http_code}"
+```
+- Destino `.webp` → convertido com sharp (`largura`/`altura` máximas; a qualidade cai até
+  caber em `maxKB`, padrão 300). Outros destinos → gravados como vieram.
+- `alternativa`: URL de reserva se a primeira falhar (ex.: a cópia redimensionada do WordPress).
+- PDF acima de `maxMB` (padrão 15) → comprimido com Ghostscript; `"dpi": 110` reduz mais
+  as imagens do PDF. Arquivos que já existem são pulados (pode rodar de novo).
+- Downloads em paralelo; o resultado (tamanhos, erros) sai em `<lista>.resultado.json`.
+  O workflow faz commit de `extraido/` e `public/` — depois, `git pull`.
+- Localmente, com internet: `node scripts/baixar-arquivos.mjs extraido/baixar.json`.
+
 ## Não faça
 - Não edite nada em `src/` nesta etapa.
 - Não extraia sites de quem não é cliente (o dono precisa ter autorizado).

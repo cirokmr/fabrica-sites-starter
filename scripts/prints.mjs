@@ -20,6 +20,9 @@ const OUT = path.resolve('out');
 const DEST = path.resolve('prints');
 const iMax = process.argv.indexOf('--max');
 const MAX = iMax >= 0 ? Number(process.argv[iMax + 1]) || 14 : 14;
+// --rotas "/noticias/x/,/projetos/y/": páginas a mais (além da home e de uma de cada tipo)
+const iRotas = process.argv.indexOf('--rotas');
+const EXTRAS = iRotas >= 0 ? (process.argv[iRotas + 1] || '').split(',').map((r) => r.trim()).filter(Boolean) : [];
 
 if (!fs.existsSync(OUT)) {
   console.error('❌ out/ não existe. Rode "npm run build" antes.');
@@ -82,7 +85,7 @@ async function estatico(rota, largura, sufixo) {
   await ctx.close();
 }
 
-const lista = rotas().slice(0, MAX);
+const lista = [...new Set([...rotas().slice(0, MAX), ...EXTRAS.map((r) => (r.endsWith('/') ? r : r + '/'))])];
 console.log(`📸 ${lista.length} página(s): ${lista.join(', ')}`);
 for (const r of lista) {
   await estatico(r, 1440, 'desktop');

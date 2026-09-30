@@ -28,3 +28,11 @@ Parágrafos normais são escritos assim, com uma linha em branco entre eles. Dá
 <dt>Fundação</dt><dd>2000</dd>
 <dt>Sede</dt><dd>Cidade Exemplo</dd>
 </dl>
+
+# Em números
+
+| Área | Projetos | Pessoas atendidas |
+|---|---:|---:|
+| Área 1 | 12 | 1.200 |
+| Área 2 | 18 | 2.450 |
+| Área 3 | 21 | 3.100 |

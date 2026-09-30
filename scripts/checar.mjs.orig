@@ -165,22 +165,16 @@ if (fs.existsSync(arqUrls)) {
   const { redirects = {} } = JSON.parse(fs.readFileSync('redirects.json', 'utf8'));
   const semBarra = (s) => (s.length > 1 ? s.replace(/\/$/, '') : s);
   const destinos = new Set(Object.keys(redirects).map(semBarra));
-  // regras com curinga ("/news/*"): cobrem tudo o que começa com o prefixo
-  const curingas = Object.keys(redirects).filter((de) => de.endsWith('*')).map((de) => de.slice(0, -1));
-  const temCuringa = (c) => curingas.some((pre) => c.startsWith(pre) || c + '/' === pre);
   let cobertas = 0;
   for (const u of antigas) {
     if (u.status && u.status >= 400) continue; // já estava quebrada no site antigo
     const c = semBarra(u.caminho || '/');
     const cSemQuery = semBarra(c.split('?')[0]);
-    if (destinos.has(c) || destinos.has(cSemQuery) || temCuringa(cSemQuery) || existeNoDist(cSemQuery)) cobertas++;
+    if (destinos.has(c) || destinos.has(cSemQuery) || existeNoDist(cSemQuery)) cobertas++;
     else erro(`URL antiga sem destino: ${u.caminho} → crie a página ou adicione em redirects.json`);
   }
   for (const [de, para] of Object.entries(redirects)) {
-    if (de.includes('*') && !/\/\*$/.test(de)) aviso(`redirect ${de}: o curinga "*" só funciona no fim, depois de uma barra (ex.: /antigo/*)`);
-    // destino com marcador (":splat", ":slug"): confere a parte fixa, antes do marcador
-    const fixo = para.includes(':') && !/^https?:/.test(para) ? para.slice(0, para.indexOf(':')) : para;
-    if (!existeNoDist(fixo) && !/^https?:/.test(para)) erro(`redirect ${de} aponta para página inexistente: ${para}`);
+    if (!existeNoDist(para) && !/^https?:/.test(para)) erro(`redirect ${de} aponta para página inexistente: ${para}`);
   }
   infos.push(`${cobertas}/${antigas.filter((u) => !(u.status >= 400)).length} URLs antigas com destino`);
 } else {

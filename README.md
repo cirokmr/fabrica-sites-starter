@@ -49,7 +49,7 @@ conteudo/                ← TUDO que muda por cliente (textos e dados)
 src/styles/tema.css      ← cores, fontes e proporções do cliente
 public/img/              ← imagens do site
 src/lib/                 motor de movimento (GSAP) — igual para todos
-src/components/secoes/   seções da home: hero, manifesto, faixa, coleção, colagem, destaques, texto
+src/components/secoes/   seções da home: hero, manifesto, faixa, coleção, colagem, destaques, texto, marcos
 scripts/                 extrator, otimizador de imagens, checador, prints, redirects
 .claude/                 regras, skills (/extrair /direcao-de-arte /reconstruir /revisar) e o agente revisor
 .github/workflows/       extrair.yml · qualidade.yml · prints.yml

@@ -21,6 +21,11 @@ export default function NotFound() {
           <Link href="/" className="btn">
             {t.botao} <span aria-hidden="true">→</span>
           </Link>
+          {t.link2 && (
+            <Link href={t.link2.href} className="btn btn--ghost">
+              {t.link2.rotulo}
+            </Link>
+          )}
         </div>
       </div>
     </section>

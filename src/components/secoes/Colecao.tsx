@@ -87,7 +87,7 @@ export default function Colecao({ dados, itens, base = '/projetos/' }: { dados: 
   if (!itens.length) return null;
 
   return (
-    <section className="acervo tema-escuro" ref={ref} aria-labelledby="colecao-title">
+    <section className={`acervo tema-${dados.tema ?? 'escuro'}`} ref={ref} aria-labelledby="colecao-title">
       <div className="acervo__track">
         <div className="acervo__head">
           {dados.rotulo && <p className="mono eyebrow muted">{dados.rotulo}</p>}

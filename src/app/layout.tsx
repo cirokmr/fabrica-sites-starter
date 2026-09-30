@@ -19,7 +19,7 @@ import Curtain from '@/components/Curtain';
 import Cursor from '@/components/Cursor';
 import SmootherInit from '@/components/SmootherInit';
 import { site } from '@/lib/site';
-import { noticias, projetos } from '@/lib/content';
+import { noticias, projetos, preencher } from '@/lib/content';
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -31,7 +31,13 @@ export const metadata: Metadata = {
     siteName: site.nomeCompleto,
     images: [{ url: site.seo.og, width: 1200, height: 630, alt: site.seo.ogAlt }],
   },
-  icons: { icon: '/img/favicon.svg' },
+  // site.json → icones (PNG em vários tamanhos + ícone da Apple); sem isso, /img/favicon.svg
+  icons: site.icones
+    ? {
+        icon: site.icones.icon.map((i) => ({ url: i.src, ...(i.tamanho ? { sizes: i.tamanho } : {}) })),
+        ...(site.icones.apple ? { apple: site.icones.apple } : {}),
+      }
+    : { icon: '/img/favicon.svg' },
 };
 
 export const viewport: Viewport = {
@@ -72,7 +78,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a className="skip-link" href="#main">
           Pular para o conteúdo
         </a>
-        {site.intro.ativa && <Loader esquerda={site.intro.esquerda} direita={site.intro.direita} rotulo={site.intro.rotulo} />}
+        {site.intro.ativa && <Loader esquerda={preencher(site.intro.esquerda)} direita={preencher(site.intro.direita)} rotulo={site.intro.rotulo} />}
         <Nav contagens={contagens} />
         <Curtain />
         <Cursor />

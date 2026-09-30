@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Detalhe from '@/components/Detalhe';
-import { getPagina, paginas, paramsOuVazio } from '@/lib/content';
+import { getPagina, paginas, paramsOuVazio, descricaoCurta } from '@/lib/content';
 
 // Páginas institucionais: cada arquivo em conteudo/paginas/<slug>.md vira /<slug>/.
 type Params = { params: Promise<{ slug: string }> };
@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (!p) return {};
   return {
     title: p.titulo,
-    description: p.descricao,
+    description: descricaoCurta(p.descricao),
     alternates: { canonical: `/${p.slug}/` },
     openGraph: { images: p.capa ? [{ url: p.capa }] : undefined },
   };

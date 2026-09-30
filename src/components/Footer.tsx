@@ -8,6 +8,7 @@ export default function Footer() {
   const ano = new Date().getFullYear();
   const { rodape, contato, local } = site;
   const zap = linkWhatsapp(contato.whatsapp);
+  const colunas: NonNullable<typeof rodape.colunas> = rodape.colunas ?? {};
   return (
     <footer className="footer tema-escuro">
       <div className="wrap">
@@ -31,6 +32,19 @@ export default function Footer() {
             </Link>
           </div>
         </div>
+
+        {rodape.logo && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            className="footer__logo"
+            src={rodape.logo.src}
+            alt={rodape.logo.alt}
+            width={rodape.logo.largura}
+            height={rodape.logo.altura}
+            loading="lazy"
+            data-fade
+          />
+        )}
 
         {contato.email && (
           <a className="footer__mail u-link" href={`mailto:${contato.email}`} data-cursor="E-mail">
@@ -57,7 +71,7 @@ export default function Footer() {
             </ul>
           </div>
           <div>
-            <p className="mono muted">Contato</p>
+            <p className="mono muted">{colunas.contato ?? 'Contato'}</p>
             <ul>
               {contato.telefone && (
                 <li>
@@ -92,11 +106,11 @@ export default function Footer() {
           </div>
           {(projetos.length > 0 || noticias.length > 0) && (
             <div>
-              <p className="mono muted">Registro</p>
+              <p className="mono muted">{colunas.registro ?? 'Registro'}</p>
               <ul>
                 {projetos.length > 0 && (
                   <li>
-                    {String(projetos.length).padStart(2, '0')} {site.projetos.titulo.toLowerCase()}
+                    {String(projetos.length).padStart(2, '0')} {colunas.itens ?? site.projetos.titulo.toLowerCase()}
                   </li>
                 )}
                 {noticias.length > 0 && <li>{noticias.length} notícias</li>}

@@ -6,7 +6,7 @@ import type { Noticia } from '@/lib/content';
 export default function Destaques({ dados, noticias, total }: { dados: SecaoDestaques; noticias: Noticia[]; total: number }) {
   if (!noticias.length) return null;
   return (
-    <section className="section tema-claro" aria-labelledby="destaques-title">
+    <section className={`section tema-${dados.tema ?? 'claro'}`} aria-labelledby="destaques-title">
       <div className="wrap">
         <div className="sec-head">
           <div>
