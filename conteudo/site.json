@@ -83,6 +83,23 @@
         "titulo": { "display": "Últimas", "serif": "notícias" },
         "quantidade": 3,
         "link": "Todas as notícias"
+      },
+      {
+        "tipo": "marcos",
+        "tema": "destaque",
+        "rotulo": "(04) Trajetória",
+        "titulo": { "display": "Marcos da", "serif": "nossa história" },
+        "itens": [
+          { "ano": "2000", "titulo": "Fundação do estúdio", "texto": "Uma ou duas frases sobre o marco: o que aconteceu e por que importa." },
+          {
+            "ano": "2012",
+            "titulo": "Um marco no meio do caminho",
+            "texto": "Cada item tem ano, título, texto curto e, se quiser, uma foto com legenda.",
+            "imagem": { "src": "/img/exemplo/foto-04.webp", "alt": "Imagem de exemplo", "legenda": "Fig. 03 — Legenda da foto" }
+          },
+          { "ano": "2024", "titulo": "O marco mais recente", "texto": "Os anos acendem enquanto a pessoa rola a página." }
+        ],
+        "link": { "rotulo": "Nossa história", "href": "/sobre/" }
       }
     ]
   },

@@ -28,3 +28,11 @@ Parágrafos normais são escritos assim, com uma linha em branco entre eles. Dá
 <dt>Fundação</dt><dd>2000</dd>
 <dt>Sede</dt><dd>Cidade Exemplo</dd>
 </dl>
+
+# Em números
+
+| Ano | Projetos | Pessoas atendidas |
+|---|---:|---:|
+| 2022 | 12 | 1.200 |
+| 2023 | 18 | 2.450 |
+| 2024 | 21 | 3.100 |
