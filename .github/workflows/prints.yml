@@ -11,6 +11,10 @@ on:
         description: "Máximo de páginas"
         required: false
         default: "14"
+      rotas:
+        description: "Páginas a mais, separadas por vírgula (ex.: /noticias/minha-noticia/,/sobre/)"
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -43,7 +47,8 @@ jobs:
       - name: Tirar prints
         env:
           MAX: ${{ inputs.max }}
-        run: node scripts/prints.mjs --max "${MAX:-14}"
+          ROTAS: ${{ inputs.rotas }}
+        run: node scripts/prints.mjs --max "${MAX:-14}" --rotas "$ROTAS"
 
       - name: Salvar no branch "prints"
         env:
@@ -57,4 +62,6 @@ jobs:
           if git show-ref --quiet refs/heads/prints; then git checkout prints; else git checkout --orphan prints && git rm -rfq . ; fi
           rm -rf "$PASTA" && mkdir -p "$PASTA" && cp -r /tmp/p/. "$PASTA/"
           echo "Prints de $BRANCH em $(date -u +%FT%TZ) — commit ${GITHUB_SHA::7}" > "$PASTA/LEIA.txt"
-          git add prints && git commit -qm "Prints de $BRANCH (${GITHUB_SHA::7})" && git push -q origin prints
+          # o branch "prints" só guarda imagens: a Vercel não deve publicá-lo
+          printf '{\n  "git": { "deploymentEnabled": false }\n}\n' > vercel.json
+          git add prints vercel.json && git commit -qm "Prints de $BRANCH (${GITHUB_SHA::7})" && git push -q origin prints

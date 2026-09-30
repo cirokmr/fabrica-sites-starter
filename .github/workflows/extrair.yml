@@ -10,12 +10,17 @@ on:
   workflow_dispatch:
     inputs:
       url:
-        description: "Endereço do site antigo (ex.: https://www.padariadojoao.com.br)"
-        required: true
+        description: "Endereço do site antigo (ex.: https://www.padariadojoao.com.br). Vazio = só baixar a lista abaixo"
+        required: false
+        default: ""
       max_paginas:
         description: "Máximo de páginas a extrair"
         required: false
         default: "60"
+      lista:
+        description: "Opcional: lista JSON de arquivos avulsos para baixar (PDFs, capas originais…), ex.: extraido/baixar.json — ver scripts/baixar-arquivos.mjs"
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -27,7 +32,7 @@ concurrency:
 jobs:
   extrair:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - name: Não rodar no molde
         if: ${{ github.event.repository.is_template }}
@@ -47,15 +52,27 @@ jobs:
           npx playwright install --with-deps chromium
 
       - name: Extrair o site antigo
+        if: ${{ inputs.url != '' }}
         env:
           URL_ANTIGA: ${{ inputs.url }}
           MAX_PAGINAS: ${{ inputs.max_paginas }}
         run: node scripts/extrair.mjs "$URL_ANTIGA" --max "$MAX_PAGINAS"
 
       - name: Otimizar imagens
+        if: ${{ inputs.url != '' }}
         run: node scripts/otimizar-imagens.mjs
 
+      - name: Baixar arquivos avulsos da lista
+        if: ${{ inputs.lista != '' }}
+        env:
+          LISTA: ${{ inputs.lista }}
+        run: |
+          # Ghostscript comprime PDFs grandes (opcional: sem ele, os PDFs ficam como vieram)
+          command -v gs >/dev/null || (sudo apt-get update -qq && sudo apt-get install -y -qq ghostscript >/dev/null) || true
+          node scripts/baixar-arquivos.mjs "$LISTA"
+
       - name: Atualizar ficha do cliente
+        if: ${{ inputs.url != '' }}
         env:
           URL_ANTIGA: ${{ inputs.url }}
           REPO: ${{ github.event.repository.name }}
@@ -73,6 +90,7 @@ jobs:
           '
 
       - name: Resumo
+        if: ${{ inputs.url != '' }}
         run: cat extraido/RELATORIO.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Salvar no repositório
@@ -81,8 +99,12 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add extraido cliente.json
-          git commit -m "Extração do site antigo: $URL_ANTIGA" || echo "Nada novo para salvar"
+          git add extraido
+          if [ -f cliente.json ]; then git add cliente.json; fi
+          if [ -d public ]; then git add public; fi
+          MSG="Extração do site antigo: $URL_ANTIGA"
+          if [ -z "$URL_ANTIGA" ]; then MSG="Arquivos avulsos do site antigo (lista)"; fi
+          git commit -m "$MSG" || echo "Nada novo para salvar"
           git pull --rebase
           git push
 

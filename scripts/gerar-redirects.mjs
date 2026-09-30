@@ -23,7 +23,10 @@ let vercel = {};
 if (fs.existsSync('vercel.json')) {
   try { vercel = JSON.parse(fs.readFileSync('vercel.json', 'utf8')); } catch { vercel = {}; }
 }
-vercel.redirects = pares.map(([de, para]) => ({ source: de, destination: para, permanent: true }));
+// Curinga no formato Netlify/Cloudflare ("/news/*" → "/noticias/:splat") vira o da Vercel
+// ("/news/:splat*" → "/noticias/:splat*").
+const paraVercel = (c) => c.replace(/\/\*$/, '/:splat*').replace(/:splat(?!\*)/g, ':splat*');
+vercel.redirects = pares.map(([de, para]) => ({ source: paraVercel(de), destination: paraVercel(para), permanent: true }));
 gravar('vercel.json', JSON.stringify(vercel, null, 2) + '\n');
 
 console.log(`[redirects] ${pares.length} redirect(s) gerados em public/_redirects e vercel.json`);

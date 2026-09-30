@@ -105,4 +105,6 @@ jobs:
           if git show-ref --quiet refs/heads/prints; then git checkout -f prints; else git checkout --orphan prints && git rm -rfq . ; fi
           rm -rf "$PASTA" && mkdir -p "$PASTA" && cp -r /tmp/proposta/. "$PASTA/"
           echo "Proposta de $BRANCH em $(date -u +%FT%TZ) — commit ${GITHUB_SHA::7}" > "$PASTA/LEIA.txt"
-          git add proposta && git commit -qm "Proposta de $BRANCH (${GITHUB_SHA::7})" && git push -q origin prints
+          # o branch "prints" só guarda imagens: a Vercel não deve publicá-lo
+          printf '{\n  "git": { "deploymentEnabled": false }\n}\n' > vercel.json
+          git add proposta vercel.json && git commit -qm "Proposta de $BRANCH (${GITHUB_SHA::7})" && git push -q origin prints
