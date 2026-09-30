@@ -31,8 +31,8 @@ Parágrafos normais são escritos assim, com uma linha em branco entre eles. Dá
 
 # Em números
 
-| Ano | Projetos | Pessoas atendidas |
+| Área | Projetos | Pessoas atendidas |
 |---|---:|---:|
-| 2022 | 12 | 1.200 |
-| 2023 | 18 | 2.450 |
-| 2024 | 21 | 3.100 |
+| Área 1 | 12 | 1.200 |
+| Área 2 | 18 | 2.450 |
+| Área 3 | 21 | 3.100 |
