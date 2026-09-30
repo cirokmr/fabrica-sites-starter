@@ -1,6 +1,6 @@
 // Conversor de Markdown → HTML sem dependências (roda no build, no servidor).
 // Cobre o que o conteúdo dos clientes usa: títulos, parágrafos, negrito, itálico,
-// links, imagens (com legenda), listas, citações, separador e blocos de HTML puro
+// links, imagens (com legenda), listas, citações, tabelas (| a | b |), separador e blocos de HTML puro
 // (linhas que começam com "<" passam direto — assim dá para usar os blocos
 // especiais da prosa: .grid, .people, .facts, .chapter, .pull, .plate...).
 
@@ -57,6 +57,25 @@ function bloco(b: string): string {
   if (linhas.every((l) => /^>\s?/.test(l))) {
     const dentro = linhas.map((l) => l.replace(/^>\s?/, '')).join(' ');
     return `<blockquote><p>${inline(dentro)}</p></blockquote>`;
+  }
+
+  // tabela (formato GFM): | a | b |  →  |---|---|  →  | 1 | 2 |  (sem a linha de traços: sem cabeçalho)
+  if (linhas.length >= 1 && linhas.every((l) => /^\s*\|.*\|\s*$/.test(l))) {
+    const celulas = (l: string) => l.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => c.trim());
+    const temCab = linhas.length >= 2 && celulas(linhas[1]).every((c) => /^:?-{3,}:?$/.test(c));
+    const alin = temCab
+      ? celulas(linhas[1]).map((c) => (c.startsWith(':') && c.endsWith(':') ? 'center' : c.endsWith(':') ? 'right' : ''))
+      : [];
+    const cel = (tag: 'th' | 'td', c: string, i: number) => {
+      const num = /^[\d\s.,%()+–—-]+$/.test(c) && /\d/.test(c) ? ' class="num"' : '';
+      const al = alin[i] ? ` style="text-align:${alin[i]}"` : '';
+      return `<${tag}${num}${al}>${inline(c)}</${tag}>`;
+    };
+    const cab = temCab ? `<thead><tr>${celulas(linhas[0]).map((c, i) => cel('th', c, i)).join('')}</tr></thead>` : '';
+    const corpo = (temCab ? linhas.slice(2) : linhas)
+      .map((l) => `<tr>${celulas(l).map((c, i) => cel('td', c, i)).join('')}</tr>`)
+      .join('');
+    return `<div class="tabela"><table>${cab}<tbody>${corpo}</tbody></table></div>`;
   }
 
   if (linhas.every((l) => /^\s*[-*]\s+/.test(l))) {

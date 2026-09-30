@@ -87,11 +87,18 @@
   border-top: 1px solid var(--line);
 }
 .footer__cols ul { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 6px; }
-.footer__word { padding-inline: var(--gutter); margin-top: clamp(30px, 5vw, 70px); }
+.footer__word {
+  padding-inline: var(--gutter);
+  margin-top: clamp(30px, 5vw, 70px);
+  /* a largura útil (sem as margens laterais) vira unidade de medida para a palavra */
+  container-type: inline-size;
+}
 .footer__word .display {
   display: block;
-  /* cabe inteira na largura: ~0,94em por letra no display expandido */
+  /* cabe inteira na largura útil (100cqi = largura entre as margens): ~0,94em por
+     letra no display expandido. Navegador antigo, sem "cqi": usa 94vw. */
   font-size: min(calc(94vw / (var(--letras, 5) * var(--display-em-por-letra, 0.94))), 26rem);
+  font-size: min(calc(100cqi / (var(--letras, 5) * var(--display-em-por-letra, 0.94))), 26rem);
   line-height: 0.78;
   letter-spacing: -0.05em;
   white-space: nowrap;
@@ -109,3 +116,4 @@
   .footer__lead { grid-template-columns: 1fr; }
   .footer__cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+.footer__logo { display: block; width: min(340px, 72vw); height: auto; margin: 0 0 clamp(40px, 6vw, 80px); }

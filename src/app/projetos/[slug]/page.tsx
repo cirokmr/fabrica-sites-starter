@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import NextEntry from '@/components/NextEntry';
 import Detalhe from '@/components/Detalhe';
-import { getProjeto, proximoDe, projetos, paramsOuVazio } from '@/lib/content';
+import { getProjeto, proximoDe, projetos, paramsOuVazio, descricaoCurta, contarImagens } from '@/lib/content';
 import { site } from '@/lib/site';
 
 type Params = { params: Promise<{ slug: string }> };
@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const img = p.hero?.src ?? p.capa;
   return {
     title: p.titulo,
-    description: p.resumo || p.subtitulo || site.descricao,
+    description: descricaoCurta(p.resumo || p.subtitulo || site.descricao),
     alternates: { canonical: `/projetos/${p.slug}/` },
     openGraph: { images: img ? [{ url: img }] : undefined },
   };
@@ -44,7 +44,7 @@ export default async function ProjetoPage({ params }: Params) {
                 {t.voltar}
               </Link>
               <span>
-                {t.prefixoNumero} {p.numero}
+                {t.rotuloNumero ?? t.prefixoNumero} {p.numero}
               </span>
               {p.quando && <span>{p.quando}</span>}
               {p.tipo && <span className="muted">{p.tipo}</span>}
@@ -102,6 +102,7 @@ export default async function ProjetoPage({ params }: Params) {
             { rotulo: 'Quando', valor: p.quando },
             { rotulo: 'Tipo', valor: p.tipo },
             { rotulo: 'Temas', valor: p.tags.join(', ') },
+            { rotulo: 'Imagens', valor: t.contarImagens && contarImagens(p.html) > 0 ? String(contarImagens(p.html)) : '' },
           ]}
         />
       </article>
