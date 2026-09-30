@@ -12,12 +12,15 @@ description: Controle de qualidade do site reconstruído antes de mostrar ao cli
 2. Corrija todos os **erros**. Para cada **aviso**, corrija ou justifique em `PENDENCIAS.md`.
 
 ## 2. Visual
-Dispare o workflow **Prints**, baixe (`git fetch origin prints`) e confira com os olhos:
+Dispare o workflow **Prints**, baixe (`git fetch origin prints`) e confira com os olhos
+(para ver páginas que não entram sozinhas — uma notícia com tabela, a estante de
+publicações —, use o campo `rotas`: `"rotas": "/noticias/x/,/publicacoes/"`):
 - abertura e rolagens da home (o hero expande? a coleção corre na horizontal? nada
   some ou fica por cima de outra coisa?);
 - **todas** as páginas no celular (texto cortado, palavra gigante saindo da tela,
   botão fora do lugar);
-- contraste do texto sobre as fotos e sobre a cor de destaque.
+- contraste do texto sobre as fotos e sobre a cor de destaque;
+- tabelas no celular (rolam na horizontal, sem cortar números) e âncoras (`/pagina/#id`).
 
 ## 3. Revisão independente
 Chame o agente **revisor-qa** (ele não participou da construção). Passe apenas:

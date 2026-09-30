@@ -28,7 +28,8 @@ fácil de manter. Siga estas regras em toda sessão.
 | Material do site antigo (só leitura) | `extraido/` |
 | Ficha/status do cliente | `cliente.json` |
 
-Formato dos `.md` e blocos especiais da prosa: `conteudo/LEIA-ME.md` e `docs/BLOCOS.md`.
+Formato dos `.md`, opções do `site.json` e blocos especiais da prosa (tabela, estante,
+vídeo, âncoras…): `conteudo/LEIA-ME.md` e `docs/BLOCOS.md`.
 
 ## Regras de conteúdo (as mais importantes)
 1. **Nunca invente conteúdo.** Todo fato (texto, telefone, endereço, serviço, preço,
@@ -78,7 +79,8 @@ Atualize `cliente.json → status` ao fim de cada etapa.
 ## Trabalhando na nuvem (modo padrão)
 - O ambiente é temporário: **ao fim de cada etapa, commit e push**.
 - A nuvem pode não ter internet nem npm. Não tente contornar. Use o GitHub Actions:
-  - **Extrair site antigo** (`extrair.yml`) — extração com internet;
+  - **Extrair site antigo** (`extrair.yml`) — extração com internet; o campo `lista`
+    baixa arquivos avulsos (PDFs, capas originais) de uma lista JSON (skill `/extrair`);
   - **Qualidade** (`qualidade.yml`) — roda sozinho a cada push: build + `checar`.
     Se falhar, o erro vira anotação legível pela API (`check-runs/<id>/annotations`);
   - **Proposta** (`proposta.yml`) — antes × depois, PDF e Lighthouse, salvos no branch
@@ -86,6 +88,7 @@ Atualize `cliente.json → status` ao fim de cada etapa.
   - **Prints** (`prints.yml`) — compila e fotografa as páginas (desktop, celular, com e
     sem animação) e salva no branch `prints`, pasta `prints/<branch>/`. É assim que você
     VÊ o site: `git fetch origin prints` e abra os JPG com a ferramenta de leitura.
+    Campo `rotas` para fotografar páginas específicas (`/noticias/x/,/sobre/`).
   Dispare pela API (`POST .../actions/workflows/<arquivo>/dispatches`) e acompanhe em
   `.../actions/workflows/<arquivo>/runs?branch=<branch>&per_page=1`.
 - Sem `node_modules` não há build local: revise o TypeScript com atenção redobrada
