@@ -1,0 +1,22 @@
+// Cloudflare Workers só com arquivos estáticos — é assim que os sites NOVOS da fábrica
+// vão ao ar (grátis, uso comercial permitido). Ver FABRICA.md.
+//
+// NÃO edite o nome nem o domínio aqui: o workflow "Publicar" (.github/workflows/publicar.yml)
+// monta a configuração final (wrangler.publicar.json, fora do Git) juntando este arquivo com
+// cliente.json → "publicacao" (nome do Worker e domínios) — scripts/publicar.mjs.
+// Aqui ficam só as opções que valem para todo site:
+{
+  "name": "site-molde",
+  "compatibility_date": "2026-09-01",
+  // só o domínio próprio (<slug>.tomboprodutora.com e, depois, o do cliente);
+  // sem endereço *.workers.dev e sem links por versão
+  "workers_dev": false,
+  "preview_urls": false,
+  "assets": {
+    // saída do `npm run build` (export estático do Next)
+    "directory": "./out",
+    // endereço que não existe → out/404.html com status 404
+    "not_found_handling": "404-page"
+  }
+  // public/_redirects (gerado de redirects.json) e public/_headers também valem aqui.
+}

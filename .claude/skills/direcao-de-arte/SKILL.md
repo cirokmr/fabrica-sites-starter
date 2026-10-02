@@ -59,6 +59,12 @@ nem de outro cliente.
   escuro × claro dominante). Não ofereça cardápio.
 
 ## 4. Aprovação
+- **Fábrica automática** (o `cliente.json` tem `fabrica.pedido`, site vendido pelo Tombo CMS):
+  a aprovação vem do dono **pelo painel**, não pelo chat. Siga o roteiro da fábrica
+  (`FABRICA.md` aqui e no repositório `tombo-prospeccao`): prancha fotografada, imagens em
+  `prints:direcao/r<rodada>/`, proposta gravada no pedido, `cliente.json → "status": "direcao"`
+  — e pare. Com amostra, comece o `DIRECAO.md` dizendo que a proposta parte da prévia
+  aprovada pelo cliente.
 - **Pare e espere a aprovação do usuário.** Aplique os ajustes que ele pedir no DIRECAO.md.
 - Aprovado: `cliente.json → "status": "direcao-aprovada"`, commit e push
   (`git add DIRECAO.md cliente.json && git commit -m "Direção de arte" && git push`).

@@ -15,15 +15,23 @@ site antigo ─/extrair─▶ extraido/ ─/direcao-de-arte─▶ DIRECAO.md (vo
 | **GitHub** | Guarda o molde e um repositório por cliente |
 | **Claude Code (nuvem)** | Extrai, propõe a direção de arte, monta, revisa e salva |
 | **GitHub Actions** | *Extrair site antigo*, *Qualidade* (build + checagem a cada envio) e *Prints* (fotos do site) |
-| **Vercel** | Publica cada versão num link de prévia |
+| **Cloudflare** | Publica os sites novos em `<slug>.tomboprodutora.com` (workflow *Publicar*; ver `FABRICA.md`) |
+| **Vercel** | Sites antigos (Cemear, Vianei, Ecoserra) e links de prévia deles |
 
 ---
 
 ## Fluxo de um cliente
 
+> **Site vendido?** No Tombo CMS: **Fábrica → Novo site (venda)**. O painel cria o repositório
+> a partir deste molde e a fábrica faz tudo (extração, direção de arte — que você aprova no
+> painel —, montagem, revisão e publicação na Cloudflare). Ver `FABRICA.md`. O fluxo manual
+> abaixo continua valendo.
+
 1. **Criar o repositório:** neste molde, botão **Use this template → Create a new
    repository** → `site-nomedocliente` → **Private**.
-2. **Conectar à Vercel:** *Add New… → Project* → importe o repositório → **Deploy**.
+2. **Hospedagem (Cloudflare):** no repositório, *Settings → Secrets and variables → Actions*
+   → segredos `CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_ACCOUNT_ID`, e em `cliente.json` a ficha
+   `publicacao` com `"liberada": false` (modelo em `FABRICA.md`).
 3. **No Claude Code, uma etapa por vez:**
 
 | Comando | O que acontece | Sua parte |
@@ -33,8 +41,9 @@ site antigo ─/extrair─▶ extraido/ ─/direcao-de-arte─▶ DIRECAO.md (vo
 | `/reconstruir` | Site montado, compilado e fotografado (desktop e celular) | Abrir o link de prévia |
 | `/revisar` | Checagem automática + inspetor independente | Testar no celular |
 
-4. **Publicar:** aprovado pelo cliente → *Settings → Domains* na Vercel → domínio dele.
-   Depois, envie `/sitemap.xml` no Google Search Console.
+4. **Publicar:** `cliente.json → publicacao.liberada: true` + push → o workflow **Publicar**
+   põe no ar em `https://<slug>.tomboprodutora.com` e confere. Domínio do cliente depois:
+   roteiro em `FABRICA.md`. Envie `/sitemap.xml` no Google Search Console.
 
 ---
 
@@ -57,13 +66,13 @@ docs/                    blocos da prosa, checklist de entrega, planilha de cont
 ```
 
 Os textos são **Markdown** — dá para corrigir uma vírgula direto no GitHub (ícone de
-lápis no arquivo) e a Vercel publica sozinha.
+lápis no arquivo) e o site publica sozinho (workflow *Publicar*, na Cloudflare).
 
 ## Como saber se está tudo certo
 
 - **Actions → Qualidade:** ✅ = compilou e passou na checagem; ❌ = abra e leia o erro.
 - **Actions → Prints:** gera fotos de todas as páginas no branch `prints`.
-- **Vercel:** cada envio mostra *Ready* (no ar) ou *Error*.
+- **Actions → Publicar:** cada envio na `main` publica e confere no ar (✅) — ou avisa por que não publicou. Sites antigos: a Vercel mostra *Ready* ou *Error*.
 - Em qualquer erro, peça ao Claude: "corrija o erro do último build".
 
 ## Evolução da fábrica

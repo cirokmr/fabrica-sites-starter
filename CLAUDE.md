@@ -10,6 +10,9 @@ fácil de manter. Siga estas regras em toda sessão.
 - **GSAP 3** (ScrollTrigger, ScrollSmoother, SplitText) — o "motor" em `src/lib/`
 - CSS puro com tokens (sem Tailwind). Fontes self-hosted via `@fontsource`.
 - React 19, TypeScript. Node 22 (`.node-version`).
+- **Hospedagem:** clientes NOVOS vão para a **Cloudflare** (Worker só de arquivos estáticos,
+  `https://<slug>.tomboprodutora.com`, workflow **Publicar** — ver `FABRICA.md`). Os sites
+  antigos (Cemear, Vianei, Ecoserra) continuam na Vercel; não mude a hospedagem deles.
 
 ## Onde fica cada coisa
 | O quê | Onde |
@@ -26,7 +29,9 @@ fácil de manter. Siga estas regras em toda sessão.
 | Direção de arte aprovada | `DIRECAO.md` (criado pela skill `/direcao-de-arte`) |
 | URLs antigas → novas | `redirects.json` |
 | Material do site antigo (só leitura) | `extraido/` |
-| Ficha/status do cliente | `cliente.json` |
+| Ficha/status do cliente (e `publicacao` na Cloudflare) | `cliente.json` |
+| Publicação na Cloudflare | `wrangler.jsonc`, `scripts/publicar.mjs`, `.github/workflows/publicar.yml` |
+| Produção em um clique (pedido vindo do Tombo CMS) | `FABRICA.md` |
 
 Formato dos `.md`, opções do `site.json` e blocos especiais da prosa (tabela, estante,
 vídeo, âncoras…): `conteudo/LEIA-ME.md` e `docs/BLOCOS.md`.
@@ -76,6 +81,11 @@ vídeo, âncoras…): `conteudo/LEIA-ME.md` e `docs/BLOCOS.md`.
 5. `/proposta` → antes × depois (imagens + PDF) para apresentar ao cliente
 Atualize `cliente.json → status` ao fim de cada etapa.
 
+**Fábrica automática (site vendido pelo Tombo CMS):** o repositório nasce deste molde pelo
+painel e a sessão agendada da fábrica segue o mesmo fluxo sem conversa: a aprovação da
+direção de arte vem do dono pelo painel ("Aprovar" / "Pedir ajuste"), não pelo chat — veja
+`FABRICA.md` e o roteiro no repositório `tombo-prospeccao` (`FABRICA.md`, skill `/fabrica`).
+
 ## Trabalhando na nuvem (modo padrão)
 - O ambiente é temporário: **ao fim de cada etapa, commit e push**.
 - A nuvem pode não ter internet nem npm. Não tente contornar. Use o GitHub Actions:
@@ -85,6 +95,9 @@ Atualize `cliente.json → status` ao fim de cada etapa.
     Se falhar, o erro vira anotação legível pela API (`check-runs/<id>/annotations`);
   - **Proposta** (`proposta.yml`) — antes × depois, PDF e Lighthouse, salvos no branch
     `prints`, pasta `proposta/<branch>/` (skill `/proposta`);
+  - **Publicar** (`publicar.yml`) — roda sozinho a cada push na main: publica na
+    Cloudflare quando `cliente.json → publicacao.liberada` é `true` e confere no ar
+    (sem a ficha, só avisa e não publica nada);
   - **Prints** (`prints.yml`) — compila e fotografa as páginas (desktop, celular, com e
     sem animação) e salva no branch `prints`, pasta `prints/<branch>/`. É assim que você
     VÊ o site: `git fetch origin prints` e abra os JPG com a ferramenta de leitura.
@@ -97,6 +110,8 @@ Atualize `cliente.json → status` ao fim de cada etapa.
   `DIRECAO.md`, `PLANO.md` e `PENDENCIAS.md` também vão: são a memória do projeto.
 
 ## Definição de pronto
-- ✅ no workflow **Qualidade** (build + `checar` sem ERROS) e deploy *Ready* na Vercel
+- ✅ no workflow **Qualidade** (build + `checar` sem ERROS) e publicado: ✅ no workflow
+  **Publicar** com a conferência no ar (clientes novos, Cloudflare) ou deploy *Ready* na
+  Vercel (sites antigos)
 - Prints revisados (desktop e celular) sem nada cortado, sobreposto ou ilegível
 - `PENDENCIAS.md` com tudo que depende do cliente

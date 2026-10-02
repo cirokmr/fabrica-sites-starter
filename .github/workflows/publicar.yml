@@ -1,0 +1,161 @@
+# PUBLICAR — põe o site no ar na Cloudflare (sites novos da fábrica; ver FABRICA.md).
+#
+# Roda sozinho a cada envio na main (inclusive as gravações do Tombo CMS: o cliente salva
+# no painel → commit na main → este workflow publica em 1–3 minutos) e pelo botão
+# Actions → Publicar → Run workflow.
+#
+# Só publica quando cliente.json → "publicacao" diz que este site é da Cloudflare e está
+# liberado ("liberada": true). Antes disso (site em produção), no molde e nos sites antigos
+# da Vercel, só avisa e termina sem publicar nada (✅).
+#
+# Precisa dos segredos do repositório CLOUDFLARE_API_TOKEN e CLOUDFLARE_ACCOUNT_ID (o Tombo
+# CMS grava os dois ao criar o repositório). Sem eles: compila, confere e avisa
+# "::warning:: Site NÃO publicado".
+#
+# Depois de publicar, confere NO AR: página inicial 200, cada arquivo que ela cita
+# (/_next/…, /img/…) 200 e um endereço inexistente 404. Na primeira publicação o domínio e
+# o certificado levam alguns minutos: a conferência tenta por até ~10 minutos.
+#
+# No pull request que muda este workflow (ou scripts/publicar.mjs, wrangler.jsonc), roda
+# o AUTOTESTE: regras da ficha, build, configuração de um cliente de mentira, wrangler em
+# modo de ensaio (--dry-run) e a conferência contra a pasta out/ servida localmente.
+name: Publicar
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/publicar.yml
+      - scripts/publicar.mjs
+      - wrangler.jsonc
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publicar-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ficha de publicação (cliente.json)
+        id: ficha
+        run: node scripts/publicar.mjs config --saida wrangler.publicar.json
+
+      - name: Nada a publicar
+        if: steps.ficha.outputs.pronto != 'true'
+        env:
+          MOTIVO: ${{ steps.ficha.outputs.motivo }}
+        run: |
+          echo "::notice title=Publicar — pulado::$MOTIVO"
+          echo "Publicação pulada: $MOTIVO" >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/setup-node@v4
+        if: steps.ficha.outputs.pronto == 'true'
+        with:
+          node-version-file: .node-version
+
+      - name: Instalar e compilar
+        id: build
+        if: steps.ficha.outputs.pronto == 'true'
+        run: |
+          set -o pipefail
+          npm ci --no-audit --no-fund || npm install --no-audit --no-fund
+          npm run build 2>&1 | tee build.log
+
+      - name: Erro de build (resumo legível pela API)
+        if: failure() && steps.build.outcome == 'failure'
+        run: |
+          if [ -f build.log ]; then
+            node -e '
+              const log = require("fs").readFileSync("build.log", "utf8").split("\n");
+              const i = log.findIndex((l) => /error|Error|erro|Failed/.test(l));
+              const t = (i >= 0 ? log.slice(Math.max(0, i - 5), i + 40) : log.slice(-45)).join("\n").slice(0, 3800);
+              console.log("::error title=Build falhou (Publicar)::" + t.replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A"));
+            '
+          fi
+
+      - name: Conferir a cópia compilada (antes de publicar)
+        if: steps.ficha.outputs.pronto == 'true'
+        run: node scripts/publicar.mjs verificar --dir out
+
+      - name: Publicar na Cloudflare
+        id: publicar
+        if: steps.ficha.outputs.pronto == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          URL: ${{ steps.ficha.outputs.url }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::warning title=Site NÃO publicado::Faltam os segredos CLOUDFLARE_API_TOKEN e/ou CLOUDFLARE_ACCOUNT_ID neste repositório (Settings → Secrets and variables → Actions). O site compilou e foi conferido; $URL não foi atualizado. Ver FABRICA.md."
+            echo "publicado=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          set -o pipefail
+          npx -y wrangler@4 deploy --config wrangler.publicar.json 2>&1 | tee wrangler.log
+          echo "publicado=true" >> "$GITHUB_OUTPUT"
+
+      - name: Erro ao publicar (resumo legível pela API)
+        if: failure() && steps.publicar.outcome == 'failure'
+        run: |
+          if [ -f wrangler.log ]; then
+            node -e '
+              const t = require("fs").readFileSync("wrangler.log", "utf8").replace(/\x1b\[[0-9;]*m/g, "").slice(-3500);
+              console.log("::error title=Cloudflare recusou a publicação::" + t.replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A"));
+            '
+          fi
+
+      - name: Conferir no ar
+        if: steps.publicar.outputs.publicado == 'true'
+        env:
+          URL: ${{ steps.ficha.outputs.url }}
+        run: |
+          sleep 15 # a Cloudflare leva alguns segundos para servir a versão nova
+          node scripts/publicar.mjs verificar --url "$URL" --tentativas 20 --espera 30
+          echo "::notice title=Publicado::$URL"
+
+  autoteste:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+
+      - name: Regras da ficha e da conferência
+        run: node scripts/publicar.mjs testar
+
+      - name: Sem cliente.json (o molde) não publica nada
+        run: |
+          node scripts/publicar.mjs config --saida /tmp/nao-deve-existir.json
+          test ! -f /tmp/nao-deve-existir.json
+
+      - name: Instalar e compilar
+        run: |
+          npm ci --no-audit --no-fund || npm install --no-audit --no-fund
+          npm run build
+
+      - name: Configuração de um cliente de mentira
+        run: |
+          printf '%s\n' '{ "cliente": "site-teste", "publicacao": { "plataforma": "cloudflare", "worker": "site-teste-publicar", "dominios": ["teste-publicar.tomboprodutora.com"], "liberada": true } }' > /tmp/cliente.json
+          node scripts/publicar.mjs config --cliente /tmp/cliente.json --saida wrangler.publicar.json
+          cat wrangler.publicar.json
+          node -e 'const c=require("./wrangler.publicar.json"); if (c.name!=="site-teste-publicar"||c.routes[0].pattern!=="teste-publicar.tomboprodutora.com"||!c.routes[0].custom_domain||c.assets.directory!=="./out") process.exit(1)'
+
+      - name: Wrangler em modo de ensaio (não publica)
+        run: npx -y wrangler@4 deploy --dry-run --config wrangler.publicar.json
+
+      - name: Conferência contra a cópia compilada
+        run: node scripts/publicar.mjs verificar --dir out
