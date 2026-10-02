@@ -78,6 +78,7 @@ jobs:
       - name: Guardar relatório e site compilado
         if: always()
         uses: actions/upload-artifact@v4
+        continue-on-error: true  # cota de armazenamento de artefatos cheia não pode parar o workflow
         with:
           name: relatorio-e-site
           path: |
