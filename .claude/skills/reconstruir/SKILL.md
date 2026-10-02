@@ -44,7 +44,8 @@ mês, anexos) e a lista de arquivos de conteúdo que você vai criar.
 - `site.json`: todos os campos com dados reais + textos da direção de arte. `home.secoes`
   na ordem do DIRECAO.md, cada uma com o `tema` (escuro/claro/destaque) da direção. `nav`
   só com páginas que existem. `url` = domínio final (ou o
-  provisório da Vercel, anotando em PENDENCIAS.md). Sem formulário? `formEndpoint: ""`.
+  provisório: `https://<slug>.tomboprodutora.com` nos sites da fábrica — `cliente.json →
+  publicacao.dominios[0]` —, ou o da Vercel nos antigos, anotando em PENDENCIAS.md). Sem formulário? `formEndpoint: ""`.
 - `paginas/*.md`, `projetos/*.md`, `noticias/*.md`: um arquivo por página, com o texto
   do site antigo convertido para Markdown limpo (sem restos de "Compartilhe", "Curtir",
   datas duplicadas). Front matter conforme `conteudo/LEIA-ME.md`. Use os blocos de
