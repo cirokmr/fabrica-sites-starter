@@ -90,16 +90,29 @@ segredos de novo**.
 
 O site nasce em `https://<slug>.tomboprodutora.com`. Para usar o domínio do cliente (ex.:
 `clinicabemviver.com.br`) — o painel mostra este roteiro na página do pedido publicado:
+
+> ⚠️ **Não mexa nos registros de e-mail do cliente.** O e-mail dele (`@clinicabemviver.com.br`)
+> depende de registros no mesmo DNS: **MX**, **TXT** (SPF `v=spf1…`, DMARC em `_dmarc`,
+> verificações do Google/Microsoft), **DKIM** (`…._domainkey`) e às vezes **CNAMEs** como
+> `autodiscover`. Ao levar o DNS para a Cloudflare eles precisam ir **iguais**, e depois
+> ninguém apaga nem altera nenhum deles. Se um registro faltar ou mudar, o cliente para de
+> receber e-mail sem nenhum aviso. O site só precisa do nome raiz e do `www`.
+
 1. **DNS do domínio na Cloudflare** (necessário para o Worker responder nele): Cloudflare →
-   **Add a domain** → `clinicabemviver.com.br` → plano Free → a Cloudflare mostra **dois
-   nameservers**. No Registro.br (ou onde o domínio foi comprado) → o domínio → **DNS** →
-   **Alterar servidores DNS** → cole os dois → Salvar. Leva de minutos a algumas horas;
-   espere o domínio ficar **Active** na Cloudflare. Antes, copie para a Cloudflare os
-   registros de e-mail (MX, SPF/TXT) que o cliente já usa — a Cloudflare costuma importar
-   sozinha; confira.
+   **Add a domain** → `clinicabemviver.com.br` → plano Free. A Cloudflare importa os registros
+   que encontra. **Antes de continuar**, compare a lista dela com a do DNS atual (Registro.br
+   ou onde estiver) e acrescente à mão o que faltar, principalmente os registros de e-mail do
+   aviso acima. Na dúvida, peça ao cliente (ou a quem cuida do e-mail dele) a lista dos
+   registros. Só então pegue os **dois nameservers** que a Cloudflare mostra. No Registro.br
+   (ou onde o domínio foi comprado) → o domínio → **DNS** → **Alterar servidores DNS** → cole
+   os dois → Salvar. Leva de minutos a algumas horas; espere o domínio ficar **Active** na
+   Cloudflare. Depois, mande um e-mail de teste para um endereço do cliente e confira se chegou.
 2. No repositório do site, `cliente.json → publicacao.dominios`: acrescente
    `"clinicabemviver.com.br"` e `"www.clinicabemviver.com.br"` **depois** do endereço da Tombo
    (o 1º continua sendo o conferido). Commit na `main` → o **Publicar** liga os domínios.
+   Se ele acusar que o nome já tem registro, apague na Cloudflare **só** os registros A, AAAA
+   ou CNAME do nome raiz e do `www` (eram do site antigo) e rode de novo. MX, TXT e os outros
+   nomes ficam como estão.
 3. `conteudo/site.json → url` = `https://clinicabemviver.com.br` (sitemap, robots, links de
    compartilhamento) e, no Tombo CMS, **Sites → o site → Endereço público do site** = o mesmo
    (o formulário de contato passa a aceitar envios dele).
