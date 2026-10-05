@@ -8,9 +8,11 @@ import type { SecaoHero } from '@/lib/site';
 // Abertura da home: a palavra gigante (nome) sobe letra a letra; um círculo
 // "projeta" uma sequência de fotos; ao rolar, a seção fica presa e o círculo
 // se expande até a tela cheia, revelando a legenda. A última foto é a final.
+// Com `expandir: false` (site.json), nada disso: a última foto já abre em tela
+// cheia, só a palavra e a pergunta sobem, e a página rola normal.
 export default function Hero({ dados }: { dados: SecaoHero }) {
   const ref = useRef<HTMLElement>(null);
-  const { palavra, nomeH1, pergunta, legenda, topo = [], base, imagens } = dados;
+  const { palavra, nomeH1, pergunta, legenda, topo = [], base, imagens, expandir = true } = dados;
 
   useScene(() => {
     const root = ref.current!;
@@ -18,10 +20,23 @@ export default function Hero({ dados }: { dados: SecaoHero }) {
     const frames = q('.hero__frame');
     const last = frames[frames.length - 1];
 
-    if (reducedMotion()) {
+    if (reducedMotion() || !expandir) {
       gsap.set(q('.hero__media'), { clipPath: 'none' });
       gsap.set(frames, { autoAlpha: 0 });
       gsap.set(last, { autoAlpha: 1 });
+      if (!expandir && !reducedMotion()) {
+        // sem a cena de rolagem: foto final em tela cheia, só a palavra e a pergunta sobem
+        gsap.set(q('.hero__shade'), { opacity: 1 });
+        const w = SplitText.create(q('.hero__word-txt')[0] ?? q('.hero__word')[0], { type: 'chars', mask: 'chars', charsClass: 'sc' });
+        const qEl = q('.hero__q')[0];
+        const qs = qEl ? SplitText.create(qEl, { type: 'words', mask: 'words', wordsClass: 'sw' }) : null;
+        gsap.set(q('.hero__word, .hero__q'), { visibility: 'visible' });
+        const intro = gsap.timeline({ defaults: { ease: 'expo.out' } });
+        intro
+          .from(w.chars, { yPercent: 150, duration: 1.6, stagger: 0.07 }, 0)
+          .from(q('.hero__row > *'), { autoAlpha: 0, y: 12, duration: 1, stagger: 0.06 }, 0.8);
+        if (qs) intro.from(qs.words, { yPercent: 135, duration: 1.2, stagger: 0.05 }, 0.6);
+      }
       return;
     }
 
@@ -71,7 +86,7 @@ export default function Hero({ dados }: { dados: SecaoHero }) {
 
   return (
     <section
-      className="hero tema-escuro"
+      className={`hero tema-escuro${expandir ? '' : ' hero--fixo'}`}
       ref={ref}
       aria-label="Apresentação"
       style={{ '--letras': letras } as React.CSSProperties}

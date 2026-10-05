@@ -26,6 +26,7 @@ Tipos: `hero`, `manifesto`, `faixa`, `colecao`, `colagem`, `destaques`, `texto`,
 | todas menos `hero` | `"tema": "escuro" \| "claro" \| "destaque"` | fundo da seção. Padrões: manifesto claro, faixa escuro, coleção escuro, colagem destaque, destaques claro, texto escuro, marcos escuro |
 | `hero` | `pergunta` com `« »` | as aspas angulares saem na cor de destaque: `"«O que fica» quando a festa acaba?"` |
 | `hero` | `{de}` e `{ate}` em `topo` e `base` | viram o 1º e o último ano das notícias (`"Notícias de {de} a {ate}"`). Vale também em `intro.esquerda` / `intro.direita` |
+| `hero` | `"expandir": false` | **padrão da Tombo para clientes.** Desliga a cena de rolagem (a seção presa e o círculo com as fotos que se abre em tela cheia): a última foto já abre em tela cheia, só o nome e a pergunta sobem, a página rola normal e a `legenda` não aparece. Sem o campo (ou `true`), a cena volta — só com pedido do cliente. Não use “Role para abrir ↓” no `topo` sem a cena |
 | `hero` | `nomeH1` | nome completo no `<h1>` só para leitores de tela e buscadores; a palavra gigante continua `palavra` |
 | `manifesto` | `icones: { "src", "alt" }` | faixa de ícones/ilustração da marca abaixo do texto (imagem **clara** sobre transparente; no fundo claro ela é invertida) |
 | `faixa` | `mostrarRotulo: true` | mostra o `rotulo` acima das faixas (sem isso, ele só é lido por leitores de tela) |

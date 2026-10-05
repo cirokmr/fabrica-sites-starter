@@ -21,6 +21,11 @@ export type SecaoHero = {
   /** em topo e base, {de} e {ate} viram o 1º e o último ano das notícias */
   topo?: string[];
   base?: string;
+  /**
+   * false: sem a cena de rolagem (o círculo com as fotos que se abre em tela cheia ao rolar):
+   * a última foto já abre em tela cheia e a página rola normal. Padrão da Tombo para clientes.
+   */
+  expandir?: boolean;
   imagens: Imagem[];
 };
 export type SecaoManifesto = {

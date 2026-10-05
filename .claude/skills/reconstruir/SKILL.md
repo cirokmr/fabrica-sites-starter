@@ -53,6 +53,9 @@ mês, anexos) e a lista de arquivos de conteúdo que você vai criar.
   `.chapter`) para dar ritmo às páginas longas. Tabelas do site antigo viram tabela
   Markdown (`| a | b |`); publicações e vídeos viram uma estante (`.covers`); faixa de
   apoiadores, `.logos`; vídeo do YouTube, `.video`.
+- **Hero sempre com `"expandir": false`** (padrão da Tombo: clientes reclamaram da cena de
+  rolagem com o círculo): a última foto abre em tela cheia e a página rola normal. Nada de
+  “Role para abrir ↓” no `topo`. A cena com o círculo só se o cliente pedir.
 - Opções do `site.json` que costumam resolver pedidos da direção sem mexer em código
   (lista completa em `conteudo/LEIA-ME.md`): seção `marcos` (linha do tempo), `tema` por
   seção, `nomeH1` e `« »` no hero, `{de}`/`{ate}` com os anos das notícias, `icones` no

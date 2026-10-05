@@ -39,7 +39,8 @@
         "palavra": "Exemplo",
         "pergunta": "Uma pergunta ou frase-conceito em itálico?",
         "legenda": { "display": "Frase principal", "serif": "que resume o propósito." },
-        "topo": ["Desde 2000", "Assinatura curta", "Role para abrir ↓"],
+        "expandir": false,
+        "topo": ["Desde 2000", "Assinatura curta"],
         "base": "Área 1 · Área 2 · Área 3",
         "imagens": [
           { "src": "/img/exemplo/foto-01.webp", "alt": "" },

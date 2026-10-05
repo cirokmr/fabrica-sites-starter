@@ -15,8 +15,9 @@ description: Controle de qualidade do site reconstruído antes de mostrar ao cli
 Dispare o workflow **Prints**, baixe (`git fetch origin prints`) e confira com os olhos
 (para ver páginas que não entram sozinhas — uma notícia com tabela, a estante de
 publicações —, use o campo `rotas`: `"rotas": "/noticias/x/,/publicacoes/"`):
-- abertura e rolagens da home (o hero expande? a coleção corre na horizontal? nada
-  some ou fica por cima de outra coisa?);
+- abertura e rolagens da home (o hero abre direto em tela cheia, sem o círculo —
+  `"expandir": false`? a coleção corre na horizontal? nada some ou fica por cima de
+  outra coisa?);
 - **todas** as páginas no celular (texto cortado, palavra gigante saindo da tela,
   botão fora do lugar);
 - contraste do texto sobre as fotos e sobre a cor de destaque;

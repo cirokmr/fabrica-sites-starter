@@ -99,6 +99,10 @@ html.reduced .hero__shade { opacity: 1; }
 .hero__caption .serif-i { font-size: 1.12em; }
 html.js:not(.reduced) :is(.hero__word, .hero__q, .hero__caption) { visibility: hidden; }
 html.reduced .hero__caption { display: none; }
+/* expandir: false — sem a cena de rolagem: a foto final já em tela cheia, sem a legenda */
+html.js .hero--fixo .hero__media { clip-path: none; }
+.hero--fixo .hero__shade { opacity: 1; }
+.hero--fixo .hero__caption { display: none; }
 
 @media (max-width: 700px) {
   .hero__row-mid, .hero__row--bottom { display: none; }
