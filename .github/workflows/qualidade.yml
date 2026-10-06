@@ -86,4 +86,4 @@ jobs:
             build.log
             out/
           if-no-files-found: ignore
-          retention-days: 7
+          retention-days: 2  # cópia para download; o relatório fica no próprio workflow (economia da cota de 2 GB)
