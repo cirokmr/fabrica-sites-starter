@@ -8,7 +8,7 @@ Tombo CMS (dono)            GitHub                                    sessão ag
 ─────────────────           ─────────────────────────────────         ─────────────────────────
 "Criar site"  ───────────▶  site-<slug> (deste molde, privado)
                             + segredos CLOUDFLARE_* do Actions
-              ───────────▶  tombo-prospeccao: fabrica/pedidos/<slug>.json  ◀── lê a fila, a cada hora
+              ───────────▶  tombo-prospeccao: fabrica/pedidos/<slug>.json  ◀── lê a fila, 4x por dia
                             (a fila; CRM: lead → "Fechou")                    extrai → direção de arte
 linha do tempo  ◀──────────  pedido.json (etapa, proposta, erros)  ◀──────  grava a proposta e PARA
 "Aprovar" / "Pedir ajuste" ─▶ pedido.json (direcao.status)          ──────▶  monta → revisa → libera
