@@ -1,0 +1,333 @@
+<title>Calculadora do Tomate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: formulário à esquerda (lote, despesas, dinheiro), resultado fixo à direita; empilha no celular */
+:root {
+  --bg: #f7f4f2;
+  --surface: #ffffff;
+  --ink: #1d2420;
+  --muted: #5f6a63;
+  --line: #e2dcd8;
+  --tomate: #c8281f;
+  --tomate-suave: #fbe7e4;
+  --folha: #2e6a3c;
+  --folha-suave: #e3f0e5;
+  --alerta: #a3610a;
+  --c-compra: #c8281f;
+  --c-desp: #e0844a;
+  --c-fixas: #b9a27a;
+  --c-juros: #6c5bb5;
+  --c-perda: #8b8f8c;
+  --c-imp: #3f7fa8;
+  --c-lucro: #2e6a3c;
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-num: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141816; --surface: #1c211e; --ink: #ecefe9; --muted: #9ba59e; --line: #2d3430;
+    --tomate: #ff6b5c; --tomate-suave: #3a1d1a; --folha: #72c287; --folha-suave: #1b3022; --alerta: #f0b25a;
+    --c-compra: #ff6b5c; --c-desp: #f0a06a; --c-fixas: #cdb88f; --c-juros: #a497e8; --c-perda: #9aa09c; --c-imp: #6fb1da; --c-lucro: #72c287;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141816; --surface: #1c211e; --ink: #ecefe9; --muted: #9ba59e; --line: #2d3430;
+  --tomate: #ff6b5c; --tomate-suave: #3a1d1a; --folha: #72c287; --folha-suave: #1b3022; --alerta: #f0b25a;
+  --c-compra: #ff6b5c; --c-desp: #f0a06a; --c-fixas: #cdb88f; --c-juros: #a497e8; --c-perda: #9aa09c; --c-imp: #6fb1da; --c-lucro: #72c287;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 32px 56px; }
+header { display: grid; gap: 6px; margin-bottom: 28px; }
+.eyebrow { font: 500 12px/1 var(--f-num); letter-spacing: .08em; text-transform: uppercase; color: var(--tomate); }
+h1 { font: 800 clamp(30px, 5vw, 46px)/1.05 var(--f-display); margin: 0; letter-spacing: -.02em; text-wrap: balance; }
+header p { margin: 0; color: var(--muted); max-width: 62ch; }
+
+.grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 28px; align-items: start; }
+@media (max-width: 860px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+
+form { display: grid; gap: 22px; }
+fieldset { border: 0; border-top: 1px solid var(--line); margin: 0; padding: 16px 0 0; display: grid; gap: 14px; min-width: 0; }
+legend { font: 700 18px/1.2 var(--f-display); padding: 0 10px 0 0; }
+legend small { display: block; font: 400 13px/1.4 var(--f-body); color: var(--muted); margin-top: 2px; }
+.row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 14px; }
+@media (max-width: 420px) { .row { grid-template-columns: minmax(0, 1fr); } }
+.campo { display: grid; gap: 5px; min-width: 0; }
+.campo label { font-size: 13px; font-weight: 500; color: var(--muted); }
+.entrada { display: flex; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.entrada:focus-within { border-color: var(--tomate); box-shadow: 0 0 0 3px var(--tomate-suave); }
+.entrada span { font: 400 13px var(--f-num); color: var(--muted); padding-inline: 10px; white-space: nowrap; }
+.entrada input { flex: 1; min-width: 0; border: 0; background: transparent; color: var(--ink); font: 500 16px var(--f-num); padding: 10px 10px; outline: none; font-variant-numeric: tabular-nums; }
+.entrada span + input { padding-left: 0; }
+.dica { font-size: 12.5px; color: var(--muted); }
+.dica a { color: var(--tomate); }
+
+.modo { display: flex; gap: 6px; flex-wrap: wrap; }
+.modo input { position: absolute; opacity: 0; pointer-events: none; }
+.modo label { cursor: pointer; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 13.5px; color: var(--ink); }
+.modo input:checked + label { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.modo input:focus-visible + label { outline: 2px solid var(--tomate); outline-offset: 2px; }
+
+.painel { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); display: grid; gap: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px; min-width: 0; }
+@media (max-width: 860px) { .painel { position: static; } }
+.preco { display: grid; gap: 4px; }
+.preco .rot { font: 500 12px var(--f-num); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.preco .valor { font: 800 clamp(38px, 6vw, 54px)/1 var(--f-display); color: var(--tomate); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.preco .sub { font: 500 15px var(--f-num); color: var(--ink); }
+.erro { background: var(--tomate-suave); color: var(--tomate); border-radius: 8px; padding: 10px 12px; font-size: 14px; }
+
+.kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.kpi { background: var(--surface); padding: 12px 14px; display: grid; gap: 2px; min-width: 0; }
+.kpi .k { font-size: 12.5px; color: var(--muted); }
+.kpi .v { font: 500 18px var(--f-num); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.kpi .v.bom { color: var(--folha); }
+.kpi .v.ruim { color: var(--tomate); }
+
+.selo { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px; font-size: 14px; line-height: 1.35; }
+.selo.bom { background: var(--folha-suave); color: var(--folha); }
+.selo.ruim { background: var(--tomate-suave); color: var(--tomate); }
+.selo.meio { background: var(--tomate-suave); color: var(--alerta); }
+
+h2 { font: 700 16px/1.2 var(--f-display); margin: 0; }
+.barra { display: flex; height: 18px; border-radius: 5px; overflow: hidden; background: var(--line); }
+.barra i { display: block; height: 100%; transition: width .35s ease; }
+@media (prefers-reduced-motion: reduce) { .barra i { transition: none; } }
+.legenda { display: grid; gap: 6px; margin: 10px 0 0; padding: 0; list-style: none; font-size: 13.5px; }
+.legenda li { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto auto; gap: 10px; align-items: center; }
+.legenda .cor { width: 12px; height: 12px; border-radius: 3px; }
+.legenda .num { font: 400 13px var(--f-num); font-variant-numeric: tabular-nums; text-align: right; }
+.legenda .pct { color: var(--muted); min-width: 3.6em; }
+
+.tabela { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th, td { padding: 7px 8px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; font-variant-numeric: tabular-nums; }
+th { font: 500 12px var(--f-num); color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+th:first-child, td:first-child { text-align: left; }
+td { font-family: var(--f-num); }
+tr.atual td { color: var(--tomate); font-weight: 500; }
+
+.como { margin-top: 36px; border-top: 1px solid var(--line); padding-top: 20px; display: grid; gap: 10px; max-width: 72ch; color: var(--muted); font-size: 14px; }
+.como h2 { color: var(--ink); }
+.como ol { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.como code { font-family: var(--f-num); font-size: 13px; color: var(--ink); }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Hortifrúti · lote de tomate</span>
+    <h1>Calculadora do Tomate</h1>
+    <p>Informe quanto você paga, quanto gasta e quanto quer ganhar. A calculadora soma o custo do dinheiro parado (juros de mercado) e a quebra do tomate, e diz por quanto vender a caixa e o quilo.</p>
+  </header>
+
+  <div class="grid">
+    <form id="f" autocomplete="off">
+      <fieldset>
+        <legend>Compra<small>Valores de exemplo. Troque pelos seus.</small></legend>
+        <div class="row">
+          <div class="campo"><label for="qtd">Quantidade comprada</label>
+            <div class="entrada"><input id="qtd" type="number" inputmode="decimal" min="0" step="1" value="100"><span>caixas</span></div></div>
+          <div class="campo"><label for="kg">Peso por caixa</label>
+            <div class="entrada"><input id="kg" type="number" inputmode="decimal" min="0" step="0.5" value="20"><span>kg</span></div></div>
+          <div class="campo"><label for="preco">Preço pago por caixa</label>
+            <div class="entrada"><span>R$</span><input id="preco" type="number" inputmode="decimal" min="0" step="0.01" value="80"></div></div>
+          <div class="campo"><label for="perda">Perda / quebra</label>
+            <div class="entrada"><input id="perda" type="number" inputmode="decimal" min="0" max="99" step="0.5" value="8"><span>%</span></div></div>
+        </div>
+        <p class="dica">Perda é o tomate que amassa, apodrece ou sobra sem vender. O custo dele é dividido entre as caixas que você vende.</p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Despesas</legend>
+        <div class="row">
+          <div class="campo"><label for="frete">Frete por caixa</label>
+            <div class="entrada"><span>R$</span><input id="frete" type="number" inputmode="decimal" min="0" step="0.01" value="6"></div></div>
+          <div class="campo"><label for="emb">Embalagem e manuseio por caixa</label>
+            <div class="entrada"><span>R$</span><input id="emb" type="number" inputmode="decimal" min="0" step="0.01" value="2"></div></div>
+          <div class="campo"><label for="fixas">Despesas fixas do lote</label>
+            <div class="entrada"><span>R$</span><input id="fixas" type="number" inputmode="decimal" min="0" step="0.01" value="500"></div></div>
+          <div class="campo"><label for="imp">Impostos e taxas sobre a venda</label>
+            <div class="entrada"><input id="imp" type="number" inputmode="decimal" min="0" max="99" step="0.1" value="4"><span>%</span></div></div>
+        </div>
+        <p class="dica">Fixas: aluguel da banca, mão de obra, energia… a parte que cabe a este lote. Impostos/taxas: Simples, maquininha de cartão, comissão.</p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Dinheiro e lucro</legend>
+        <div class="row">
+          <div class="campo"><label for="juros">Juros de mercado (ao ano)</label>
+            <div class="entrada"><input id="juros" type="number" inputmode="decimal" min="0" step="0.05" value="15"><span>% a.a.</span></div></div>
+          <div class="campo"><label for="dias">Dinheiro parado até receber</label>
+            <div class="entrada"><input id="dias" type="number" inputmode="decimal" min="0" step="1" value="30"><span>dias</span></div></div>
+        </div>
+        <p class="dica">Use a Selic atual (consulte em <a href="https://www.bcb.gov.br/controleinflacao/taxaselic" target="_blank" rel="noopener">bcb.gov.br</a>) ou, se você pega empréstimo para comprar, a taxa do seu capital de giro. Os 15% são só exemplo. Os dias vão do pagamento ao fornecedor até o dinheiro da venda entrar.</p>
+        <div class="campo"><label for="margem">Lucro que você quer</label>
+          <div class="entrada"><input id="margem" type="number" inputmode="decimal" min="0" step="0.5" value="20"><span>%</span></div></div>
+        <div class="modo" role="radiogroup" aria-label="Como calcular o percentual de lucro">
+          <input type="radio" name="modo" id="m-venda" value="venda" checked><label for="m-venda">% sobre o preço de venda (margem)</label>
+          <input type="radio" name="modo" id="m-custo" value="custo"><label for="m-custo">% sobre o custo (markup)</label>
+        </div>
+        <p class="dica">Margem de 20% = de cada R$ 100 vendidos, R$ 20 são lucro. Markup de 20% = custo mais 20%, o que dá um lucro menor no fim.</p>
+      </fieldset>
+    </form>
+
+    <aside class="painel" aria-live="polite">
+      <div class="preco">
+        <span class="rot">Venda cada caixa por</span>
+        <span class="valor" id="o-preco">—</span>
+        <span class="sub" id="o-kg">—</span>
+      </div>
+      <div class="erro" id="o-erro" hidden></div>
+
+      <div class="kpis">
+        <div class="kpi"><span class="k">Custo total do lote</span><span class="v" id="o-custo">—</span></div>
+        <div class="kpi"><span class="k">Juros do período</span><span class="v" id="o-juros">—</span></div>
+        <div class="kpi"><span class="k">Faturamento</span><span class="v" id="o-receita">—</span></div>
+        <div class="kpi"><span class="k">Lucro líquido</span><span class="v" id="o-lucro">—</span></div>
+        <div class="kpi"><span class="k">Caixas vendáveis</span><span class="v" id="o-vend">—</span></div>
+        <div class="kpi"><span class="k">Custo por caixa vendida</span><span class="v" id="o-cunit">—</span></div>
+      </div>
+
+      <div class="selo" id="o-selo"></div>
+
+      <div>
+        <h2>Para onde vai o preço de uma caixa</h2>
+        <div class="barra" id="o-barra" role="img" aria-label="Composição do preço de venda"></div>
+        <ul class="legenda" id="o-leg"></ul>
+      </div>
+
+      <div>
+        <h2>Outros percentuais de lucro</h2>
+        <div class="tabela">
+          <table>
+            <thead><tr><th>Lucro</th><th>R$/caixa</th><th>R$/kg</th><th>Lucro do lote</th></tr></thead>
+            <tbody id="o-tab"></tbody>
+          </table>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <section class="como">
+    <h2>Como a conta é feita</h2>
+    <ol>
+      <li>Custo do lote = caixas × (preço + frete + embalagem) + despesas fixas.</li>
+      <li>Juros = custo do lote × ((1 + juros anual)<sup>dias ÷ 365</sup> − 1). É o que esse dinheiro renderia aplicado, ou o que você paga se pegou emprestado.</li>
+      <li>Caixas vendáveis = caixas × (1 − perda). O custo total é dividido só por elas.</li>
+      <li>Preço com margem: <code>custo por caixa ÷ (1 − impostos − margem)</code>. Com markup: <code>custo por caixa × (1 + markup) ÷ (1 − impostos)</code>.</li>
+      <li>Lucro líquido = faturamento − impostos − custo total. Como os juros já entram no custo, esse lucro é o que sobra <em>acima</em> do que o dinheiro renderia no mercado.</li>
+    </ol>
+  </section>
+</div>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+  var num = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 });
+  var pct = function (x) { return num.format(x * 100) + '%'; };
+  var val = function (id) { var v = parseFloat($(id).value); return isFinite(v) && v >= 0 ? v : 0; };
+
+  function precoPara(c, imp, m, modo) {
+    if (modo === 'venda') { var d = 1 - imp - m; return d > 0 ? c / d : NaN; }
+    return imp < 1 ? c * (1 + m) / (1 - imp) : NaN;
+  }
+
+  function calcular() {
+    var qtd = val('qtd'), kg = val('kg'), preco = val('preco'), perda = Math.min(val('perda'), 99) / 100;
+    var frete = val('frete'), emb = val('emb'), fixas = val('fixas'), imp = Math.min(val('imp'), 99) / 100;
+    var jurosAno = val('juros') / 100, dias = val('dias'), m = val('margem') / 100;
+    var modo = document.querySelector('input[name="modo"]:checked').value;
+
+    var compra = qtd * preco, variaveis = qtd * (frete + emb);
+    var base = compra + variaveis + fixas;
+    var juros = base * (Math.pow(1 + jurosAno, dias / 365) - 1);
+    var custo = base + juros;
+    var vend = qtd * (1 - perda);
+    var c = vend > 0 ? custo / vend : NaN;
+    var P = precoPara(c, imp, m, modo);
+
+    var erro = '';
+    if (!(vend > 0)) erro = 'Informe a quantidade de caixas.';
+    else if (!isFinite(P)) erro = 'Impostos + margem somam 100% ou mais. Nenhum preço cobre isso: reduza a margem ou use markup.';
+    $('o-erro').hidden = !erro; $('o-erro').textContent = erro;
+
+    var ok = !erro;
+    var receita = ok ? P * vend : 0, impostos = receita * imp, lucro = receita - impostos - custo;
+    var margemReal = receita > 0 ? lucro / receita : 0;
+
+    $('o-preco').textContent = ok ? brl.format(P) : '—';
+    $('o-kg').textContent = ok && kg > 0 ? brl.format(P / kg) + ' por kg' : '—';
+    $('o-custo').textContent = brl.format(custo);
+    $('o-juros').textContent = brl.format(juros);
+    $('o-receita').textContent = ok ? brl.format(receita) : '—';
+    $('o-lucro').textContent = ok ? brl.format(lucro) : '—';
+    $('o-lucro').className = 'v ' + (ok ? (lucro > 0 ? 'bom' : 'ruim') : '');
+    $('o-vend').textContent = num.format(vend);
+    $('o-cunit').textContent = isFinite(c) ? brl.format(c) : '—';
+
+    var selo = $('o-selo');
+    if (!ok) { selo.hidden = true; }
+    else {
+      selo.hidden = false;
+      var ret = base > 0 ? lucro / base : 0;
+      var taxaPeriodo = Math.pow(1 + jurosAno, dias / 365) - 1;
+      if (lucro <= 0) { selo.className = 'selo ruim'; selo.textContent = 'Com esse preço o lote não paga nem os juros do dinheiro. Aumente o percentual de lucro.'; }
+      else {
+        selo.className = 'selo bom';
+        selo.textContent = 'Margem real de ' + pct(margemReal) + ' sobre a venda. O lote rende ' + pct(ret + taxaPeriodo) + ' sobre o dinheiro investido em ' + num.format(dias) + ' dias, contra ' + pct(taxaPeriodo) + ' se ficasse aplicado.';
+      }
+    }
+
+    // composição do preço de uma caixa vendida
+    var barra = $('o-barra'), leg = $('o-leg');
+    barra.innerHTML = ''; leg.innerHTML = '';
+    if (ok && P > 0) {
+      var partes = [
+        ['Tomate (compra)', preco, '--c-compra'],
+        ['Frete e embalagem', frete + emb, '--c-desp'],
+        ['Despesas fixas', fixas / vend, '--c-fixas'],
+        ['Juros do dinheiro', juros / vend, '--c-juros'],
+        ['Perda / quebra', (compra + variaveis) * perda / vend, '--c-perda'],
+        ['Impostos e taxas', P * imp, '--c-imp'],
+        ['Seu lucro', P - c - P * imp, '--c-lucro']
+      ];
+      partes.forEach(function (p) {
+        var share = Math.max(p[1], 0) / P;
+        var i = document.createElement('i');
+        i.style.width = (share * 100) + '%'; i.style.background = 'var(' + p[2] + ')'; i.title = p[0];
+        barra.appendChild(i);
+        var li = document.createElement('li');
+        li.innerHTML = '<span class="cor" style="background:var(' + p[2] + ')"></span><span></span><span class="num"></span><span class="num pct"></span>';
+        li.children[1].textContent = p[0];
+        li.children[2].textContent = brl.format(p[1]);
+        li.children[3].textContent = pct(p[1] / P);
+        leg.appendChild(li);
+      });
+    }
+
+    // tabela de cenários
+    var tab = $('o-tab'); tab.innerHTML = '';
+    var lista = [0.10, 0.15, 0.20, 0.25, 0.30, 0.40];
+    if (lista.indexOf(m) < 0) lista.push(m);
+    lista.sort(function (a, b) { return a - b; }).forEach(function (mm) {
+      var p = isFinite(c) ? precoPara(c, imp, mm, modo) : NaN;
+      var tr = document.createElement('tr');
+      if (Math.abs(mm - m) < 1e-9) tr.className = 'atual';
+      var l = isFinite(p) ? p * vend * (1 - imp) - custo : NaN;
+      [pct(mm), isFinite(p) ? brl.format(p) : '—', isFinite(p) && kg > 0 ? brl.format(p / kg) : '—', isFinite(l) ? brl.format(l) : '—']
+        .forEach(function (t) { var td = document.createElement('td'); td.textContent = t; tr.appendChild(td); });
+      tab.appendChild(tr);
+    });
+  }
+
+  $('f').addEventListener('input', calcular);
+  $('f').addEventListener('change', calcular);
+  $('f').addEventListener('submit', function (e) { e.preventDefault(); });
+  calcular();
+})();
+</script>
